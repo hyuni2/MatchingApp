@@ -14,10 +14,11 @@ class DBManager(
     // 테이블 생성
     override fun onCreate(db: SQLiteDatabase?) {
         db!!.execSQL(
-            "CREATE TABLE IF NOT EXISTS UserInfo (id TEXT PRIMARY KEY, password TEXT)"
+            "CREATE TABLE IF NOT EXISTS UserInfo (" + "id TEXT PRIMARY KEY, " + "password TEXT)"
         )
         db.execSQL(
-            "CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, isMentor BOOLEAN, major TEXT)"
+            "CREATE TABLE IF NOT EXISTS Profile (" + "id TEXT PRIMARY KEY, " + "isMentor BOOLEAN, " + "major TEXT, " +
+                    "FOREIGN KEY(id) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
     }
 
@@ -48,7 +49,7 @@ class DBManager(
         return isValid
     }
 
-    // UserInfo : 아이디 중복 여부 확인
+    // UserInfo : 아이디 중복 여부 확인 (중복시 true반환)
     fun checkIdExist(id: String): Boolean {
         val db = this.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ?", arrayOf(id))
@@ -57,18 +58,12 @@ class DBManager(
         return exists
     }
 
-    // UserInfo : id 기준으로 삭제 (회원 탈퇴)
-    fun deleteUserInfo(id: String): Int {
-        val db = this.writableDatabase
-        return db.delete("UserInfo", "id = ?", arrayOf(id))
-    }
 
-
-    // Profile : 이름, 멘토/멘티 여부, 전공 저장
-    fun insertProfileData(name: String, isMentor: Boolean, major: String): Long {
+    // Profile : 프로필 등록
+    fun insertProfileData(id: String, isMentor: Boolean, major: String): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
-            put("name", name)
+            put("id", id)
             put("isMentor", isMentor)
             put("major", major)
         }
@@ -76,28 +71,29 @@ class DBManager(
     }
 
 
-    // Profile : 프로필 조회 (이름으로)
-    fun getProfileByName(name: String): Cursor {
+    // Profile : 프로필 조회 (id로 조회)
+    fun getProfileByName(id: String): Cursor {
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(name))
+        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
     }
 
 
     // Profile : 프로필 수정 (이름 기준)
-    fun updateProfile(name: String, newIsMentor: Boolean, newMajor: String): Int {
+    fun updateProfile(id: String, isMentor: Boolean, major: String): Int {
         val db = this.writableDatabase
         val values = ContentValues().apply {
-            put("isMentor", newIsMentor)
-            put("major", newMajor)
+            put("isMentor", isMentor)
+            put("major", major)
         }
 
-        return db.update("Profile", values, "name = ?", arrayOf(name))
+        return db.update("Profile", values, "id = ?", arrayOf(id))
     }
 
 
-    // Profile : id 기준으로 삭제 (탈퇴시 프로필 까지 삭제하도록)
-    fun deleteProfile(id: String): Int {
+    // 회원 탈퇴: id 기준으로 삭제 (탈퇴시 프로필 까지 삭제하도록)
+    fun deleteUser(id: String): Boolean {
         val db = this.writableDatabase
-        return db.delete("Profile", "id = ?", arrayOf(id.toString()))
+        val rowsAffected = db.delete("UserInfo", "id = ?", arrayOf(id))
+        return rowsAffected > 0
     }
 }
