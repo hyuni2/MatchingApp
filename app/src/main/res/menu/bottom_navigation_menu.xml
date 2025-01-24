@@ -4,13 +4,13 @@
     <!-- 하단 툴바를 위한 임시 아이콘들 설정-->
 
     <item
-        android:id="@+id/fregment_findmentomenti"
+        android:id="@+id/findmentomenti"
         android:title="멘토멘티 찾기"
         android:icon="@drawable/ic_launcher_background"
         />
     <item
-        android:id="@+id/fregment_match"
-        android:title="매칭"
+        android:id="@+id/myhistory"
+        android:title="매칭이력"
         android:icon="@drawable/ic_launcher_foreground"
         />
     <item

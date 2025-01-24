@@ -96,4 +96,12 @@ class DBManager(
         val rowsAffected = db.delete("UserInfo", "id = ?", arrayOf(id))
         return rowsAffected > 0
     }
+
+
+    // Profile : 모든 프로필 조회, 멘토멘티 찾기 페이지 프로필 로딩용. (임의추가)
+    fun getAllProfiles(): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT * FROM Profile", null)
+    }
+
 }
