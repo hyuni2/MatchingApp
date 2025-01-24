@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 하단 툴바를 위한 임시 아이콘들 설정-->
+
+    <item
+        android:id="@+id/fregment_findmentomenti"
+        android:title="멘토멘티 찾기"
+        android:icon="@drawable/ic_launcher_background"
+        />
+    <item
+        android:id="@+id/fregment_match"
+        android:title="매칭"
+        android:icon="@drawable/ic_launcher_foreground"
+        />
+    <item
+        android:id="@+id/mypage"
+        android:title="마이페이지"
+        android:icon="@color/black"
+        />
+</menu>
