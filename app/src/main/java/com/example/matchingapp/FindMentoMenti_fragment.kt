@@ -2,15 +2,15 @@ package com.example.matchingapp
 
 import DBManager
 import ProfileAdapter
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -51,9 +51,19 @@ class FindMentoMenti_fragment : Fragment() {
         //"내 소개서 관리" 버튼 클릭 이벤트
         //내 소개서 관리 클릭 시 -> 마이페이지 이동, 마이페이지 "프로필 수정"으로 소개서 수정.
         val btnManageProfile = view.findViewById<Button>(R.id.btnManageProfile)
+
+        //프래그먼트 이동 (마이페이지로)
         btnManageProfile.setOnClickListener{
-            val intent = Intent(this, MyPage_fragment::class.java)
-            startActivity(intent)
+            val fragmentManager: FragmentManager = getSupportFragmentManager()
+            val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+            // Fragment 교체
+            fragmentTransaction.replace(R.id.fragmentContainer, MyPage_fragment);
+            fragmentTransaction.addToBackStack(null)
+
+            // 변경 적용
+            fragmentTransaction.commit();
+
+
         }
 
         //RecyclerView 초기화
@@ -69,6 +79,10 @@ class FindMentoMenti_fragment : Fragment() {
 
         return view
 
+    }
+
+    private fun getSupportFragmentManager(): FragmentManager {
+        TODO("Not yet implemented")
     }
 
     private fun navigateToDetailFragment(profile: com.example.matchingapp.Profile) {
