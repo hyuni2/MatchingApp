@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- 바텀 내비게이션 뷰 ; 메뉴바 -->
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -16,6 +18,14 @@
         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!-- 프레그먼트컨테이너  -->
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"

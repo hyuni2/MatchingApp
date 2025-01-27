@@ -4,7 +4,6 @@ import DBManager
 import ProfileAdapter
 import android.content.Intent
 import android.os.Bundle
-import android.provider.ContactsContract.Profile
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-z
+
 /**
  * A simple [Fragment] subclass.
  * Use the [FindMentoMenti_fragment.newInstance] factory method to
@@ -41,10 +40,6 @@ class FindMentoMenti_fragment : Fragment() {
         }
     }
 
-    fun getSampleData(): List<String> {
-        //샘플 데이터
-        return listOf("멘토/멘티 1", "멘토/멘티 2", "멘토/멘티 3", "멘토/멘티 4", "멘토/멘티 5")
-    }
 
     override fun onCreateView(
 
@@ -67,18 +62,48 @@ class FindMentoMenti_fragment : Fragment() {
 
         //cursor를 adapter에 연결
         val cursor = dbManager.getAllProfiles()
-        adapter = ProfileAdapter(cursor)
+        adapter = ProfileAdapter(cursor){ profile ->
+            navigateToDetailFragment(profile) // 클릭된 Profile 객체 전달
+        }
         recyclerView.adapter = adapter
 
         return view
 
     }
 
+    private fun navigateToDetailFragment(profile: com.example.matchingapp.Profile) {
+
+        if (profile == null) {
+            Toast.makeText(requireContext(), "프로필 데이터를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val detailFragment = ProfileDetailFragment()
+
+        // 데이터 전달
+        val bundle = Bundle().apply {
+            putString("name", profile.name)
+            putString("role", if (profile.isMentor) "멘토" else "멘티")
+            putString("major", profile.major)
+            putString("intro", profile.intro)
+        }
+        detailFragment.arguments = bundle
+
+
+        // Fragment 전환
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, detailFragment) // fragmentContainer는 메인 레이아웃의 ID
+            .addToBackStack(null) // 뒤로 가기 지원
+            .commit()
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         //cursor 닫기
         adapter.cursor.close()
     }
+
+
 
 
     companion object {

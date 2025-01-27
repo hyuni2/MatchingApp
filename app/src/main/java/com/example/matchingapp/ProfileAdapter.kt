@@ -1,13 +1,17 @@
 import android.database.Cursor
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.matchingapp.Profile
+import com.example.matchingapp.R
 
-//멘토멘티 찾기 페이지의 스크롤뷰를 관리하는 클래스
-class ProfileAdapter(val cursor: Cursor) :
-    RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
+class ProfileAdapter(
+    private val cursor: Cursor,
+    private val onItemClick: (Profile) -> Unit // 클릭 리스너 추가
+) : RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -18,9 +22,18 @@ class ProfileAdapter(val cursor: Cursor) :
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
         if (cursor.moveToPosition(position)) {
             val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
             val isMentor = cursor.getInt(cursor.getColumnIndexOrThrow("isMentor")) > 0
             val major = cursor.getString(cursor.getColumnIndexOrThrow("major"))
-            holder.bind(id, isMentor, major)
+            val intro = cursor.getString(cursor.getColumnIndexOrThrow("intro"))
+        //프로필  DB 에 소개글 추가 가능한지 문의하기.
+
+
+            val profile = Profile(id, name, isMentor, major, intro) // Profile 객체 생성
+            holder.bind(profile)
+            holder.itemView.setOnClickListener {
+                onItemClick(profile) // 클릭 시 리스너 호출
+            }
         }
     }
 
@@ -29,14 +42,15 @@ class ProfileAdapter(val cursor: Cursor) :
     }
 
     class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvId: TextView = itemView.findViewById(R.id.tvId)
+        private val tvName: TextView = itemView.findViewById(R.id.tvName)
         private val tvRole: TextView = itemView.findViewById(R.id.tvRole)
         private val tvMajor: TextView = itemView.findViewById(R.id.tvMajor)
 
-        fun bind(id: String, isMentor: Boolean, major: String) {
-            tvId.text = id
-            tvRole.text = if (isMentor) "멘토" else "멘티"
-            tvMajor.text = major
+        fun bind(profile: Profile) {
+            tvName.text = profile.name
+            tvRole.text = if (profile.isMentor) "멘토" else "멘티"
+            tvMajor.text = profile.major
         }
     }
 }
+
