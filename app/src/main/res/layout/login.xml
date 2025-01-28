@@ -1,64 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/main"
-    >
+    android:padding="16dp"
+    android:gravity="center"
+    tools:context=".Login">
 
     <!-- 디자인 요소 도입 (색 변경 등) -->
 
     <TextView
+        android:id="@+id/enter_id"
         android:layout_width="wrap_content"
-        android:layout_height="41dp"
-        android:text="1. 아이디를 입력해주세요."
+        android:layout_height="wrap_content"
+        android:text="@string/enter_id"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.378"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="93dp" />
-
-    <TextView
-        android:id="@+id/pw"
-        android:layout_width="wrap_content"
-        android:layout_height="41dp"
-        android:text="2. 비밀번호를 입력해 주세요."
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.403"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="195dp" />
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/id"
         android:layout_width="200dp"
-        android:layout_height="30dp"
+        android:layout_height="48dp"
         android:backgroundTint="#8BE2DC"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="134dp" />
+        android:inputType="text"
+        android:hint="@string/id_hint"
+        android:contentDescription="@string/id_description"
+        android:autofillHints="username"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_password"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
 
     <EditText
+        android:id="@+id/password"
         android:layout_width="200dp"
-        android:layout_height="30dp"
+        android:layout_height="48dp"
         android:backgroundTint="@color/cardview_dark_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="236dp" />
+        android:inputType="textPassword"
+        android:hint="@string/password_hint"
+        android:contentDescription="@string/password_description"
+        android:autofillHints="password"
+        android:layout_marginBottom="32dp" />
 
     <Button
         android:id="@+id/checkidpw"
         android:layout_width="170dp"
         android:layout_height="50dp"
         android:backgroundTint="#63C7C2"
-        android:text="완료"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="556dp" />
+        android:text="@string/complete" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
