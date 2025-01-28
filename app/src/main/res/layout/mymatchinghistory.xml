@@ -30,20 +30,27 @@
             android:background="?android:attr/listDivider" />
 
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/sendfilter"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filterChipGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
-            android:text="보낸 신청"
-            />
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/recievefilter"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="받은 신청" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sendfilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:text="보낸 신청" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/recievefilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:text="받은 신청" />
+        </com.google.android.material.chip.ChipGroup>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mysendmatch"
@@ -51,6 +58,8 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:padding="16dp"
+            android:visibility="visible"
+            android:scrollbars="vertical"
             app:layout_constraintTop_toBottomOf="@id/divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

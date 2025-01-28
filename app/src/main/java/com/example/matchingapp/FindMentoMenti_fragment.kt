@@ -32,6 +32,7 @@ class FindMentoMenti_fragment : Fragment() {
     private lateinit var dbManager : DBManager
     private lateinit var adapter: ProfileAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -52,12 +53,15 @@ class FindMentoMenti_fragment : Fragment() {
         //내 소개서 관리 클릭 시 -> 마이페이지 이동, 마이페이지 "프로필 수정"으로 소개서 수정.
         val btnManageProfile = view.findViewById<Button>(R.id.btnManageProfile)
 
+        val myPageFragment = MyPage_fragment()
+        //Mypage로 이동할 프래그먼트 객체 생성
+
         //프래그먼트 이동 (마이페이지로)
         btnManageProfile.setOnClickListener{
             val fragmentManager: FragmentManager = getSupportFragmentManager()
             val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
             // Fragment 교체
-            fragmentTransaction.replace(R.id.fragmentContainer, MyPage_fragment);
+            fragmentTransaction.replace(R.id.fragmentContainer, myPageFragment);
             fragmentTransaction.addToBackStack(null)
 
             // 변경 적용

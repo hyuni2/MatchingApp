@@ -20,6 +20,18 @@ class DBManager(
             "CREATE TABLE IF NOT EXISTS Profile (" + "id TEXT PRIMARY KEY, " + "isMentor BOOLEAN, " + "major TEXT, " +
                     "FOREIGN KEY(id) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
+
+        // MatchRequest 테이블 (새로운 테이블)
+        //MyMatchHistory : 보낸신청/받은신청 필터링 기능용 new DB
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS MatchRequest (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "senderId TEXT, " + // 신청을 보낸 사용자 ID
+                    "receiverId TEXT, " + // 신청을 받은 사용자 ID
+                    "status TEXT, " + // 상태: 신청 완료, 매칭 완료, 매칭 실패, 수락, 거절
+                    "FOREIGN KEY(senderId) REFERENCES UserInfo(id) ON DELETE CASCADE, " +
+                    "FOREIGN KEY(receiverId) REFERENCES UserInfo(id) ON DELETE CASCADE)"
+        )
     }
 
     // 데이터베이스 업그레이드 메서드
@@ -28,6 +40,9 @@ class DBManager(
         db.execSQL("DROP TABLE IF EXISTS profile")
         onCreate(db)
     }
+
+
+
 
     // UserInfo : 회원가입시 아이디와 비밀번호 저장
     fun registerUser(id: String, password: String): Long {
@@ -104,4 +119,47 @@ class DBManager(
         return db.rawQuery("SELECT * FROM Profile", null)
     }
 
+    //이하 4개 테이블 전부 신청 히스토리 관련 추가 DB
+
+    // 신청 데이터 추가
+    fun insertMatchRequest(senderId: String, receiverId: String, status: String): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put("senderId", senderId)
+            put("receiverId", receiverId)
+            put("status", status)
+        }
+        return db.insert("MatchRequest", null, values)
+    }
+
+    // 특정 사용자가 보낸 신청 조회
+    fun getSentRequests(userId: String): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery(
+            "SELECT * FROM MatchRequest WHERE senderId = ?",
+            arrayOf(userId)
+        )
+    }
+
+    // 특정 사용자가 받은 신청 조회
+    fun getReceivedRequests(userId: String): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery(
+            "SELECT * FROM MatchRequest WHERE receiverId = ?",
+            arrayOf(userId)
+        )
+    }
+
+    // 신청 상태 업데이트
+    fun updateRequestStatus(requestId: Int, status: String): Int {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put("status", status)
+        }
+        return db.update("MatchRequest", values, "id = ?", arrayOf(requestId.toString()))
+    }
 }
+
+
+
+

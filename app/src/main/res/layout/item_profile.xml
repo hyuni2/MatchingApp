@@ -7,10 +7,10 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/tvId"
+        android:id="@+id/tvName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="User ID"
+        android:text="사용자 이름"
         android:textStyle="bold"
         android:layout_marginBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="Role"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvId" />
+        app:layout_constraintTop_toBottomOf="@id/tvName" />
 
     <TextView
         android:id="@+id/tvMajor"

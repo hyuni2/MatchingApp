@@ -9,7 +9,7 @@ import com.example.matchingapp.Profile
 import com.example.matchingapp.R
 
 class ProfileAdapter(
-    private val cursor: Cursor,
+    val cursor: Cursor,
     private val onItemClick: (Profile) -> Unit // 클릭 리스너 추가
 ) : RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
 
