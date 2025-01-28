@@ -10,23 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MyMatchingHistory_fragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MyMatchingHistory_fragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
-
 
     private lateinit var dbManager: DBManager
     private lateinit var sendFilterChip: Chip
@@ -47,21 +36,15 @@ class MyMatchingHistory_fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.mymatchinghistory, container, false)
-        // DB 초기화
         dbManager = DBManager(requireContext(), "MatchingDB", null, 1)
 
-        // UI 초기화
         sendFilterChip = view.findViewById(R.id.sendfilter)
         receiveFilterChip = view.findViewById(R.id.recievefilter)
         recyclerView = view.findViewById(R.id.mysendmatch)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        matchingAdapter = MatchingAdapter(requireContext())
-        recyclerView.adapter = matchingAdapter
 
-        // 기본 데이터 로드
         loadMatchRequests(isSentRequests = true)
 
-        // Chip 클릭 이벤트 처리
         sendFilterChip.setOnClickListener {
             loadMatchRequests(isSentRequests = true)
         }
@@ -72,8 +55,6 @@ class MyMatchingHistory_fragment : Fragment() {
 
         return view
     }
-
-    // 신청 데이터 로드
     private fun loadMatchRequests(isSentRequests: Boolean) {
         val userId = "currentUserId" // 현재 로그인된 사용자 ID (추가 구현 필요)
         val cursor = if (isSentRequests) {
@@ -88,12 +69,17 @@ class MyMatchingHistory_fragment : Fragment() {
             val senderId = cursor.getString(cursor.getColumnIndexOrThrow("senderId"))
             val receiverId = cursor.getString(cursor.getColumnIndexOrThrow("receiverId"))
             val status = cursor.getString(cursor.getColumnIndexOrThrow("status"))
-            requests.add(MatchRequest(id, senderId, receiverId, status))
+            val isMentor = cursor.getInt(cursor.getColumnIndexOrThrow("isMentor")) == 1 // 멘토/멘티 정보
+            requests.add(MatchRequest(id, senderId, receiverId, status, isMentor))
         }
         cursor.close()
 
-        matchingAdapter.setData(requests)
-    }
-    }
-
-
+        // 기존의 MatchingAdapter를 재사용하여 데이터만 업데이트
+        if (::matchingAdapter.isInitialized) {
+            matchingAdapter.setData(requests)
+        } else {
+            matchingAdapter = MatchingAdapter(requireContext(), isSentRequests)
+            recyclerView.adapter = matchingAdapter
+            matchingAdapter.setData(requests)
+        }
+    }}
