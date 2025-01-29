@@ -1,3 +1,5 @@
+package com.example.matchingapp
+
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor

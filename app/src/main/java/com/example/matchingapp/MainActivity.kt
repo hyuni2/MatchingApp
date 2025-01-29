@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.myhistory -> {
-                    replaceFragment(MyHistory_fragment())
+                    replaceFragment(MyMatchingHistory_fragment())
                     true
                 }
                 else -> false

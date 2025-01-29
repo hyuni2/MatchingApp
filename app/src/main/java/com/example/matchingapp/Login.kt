@@ -1,6 +1,6 @@
 package com.example.matchingapp
 
-import DBManager
+import com.example.matchingapp.DBManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.content.SharedPreferences
 import org.w3c.dom.Text
 
 
@@ -19,6 +20,7 @@ class Login : AppCompatActivity() {
     lateinit var pw : EditText
     lateinit var checkidpw : Button
     private lateinit var dbManager: DBManager
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +29,7 @@ class Login : AppCompatActivity() {
 
 
         dbManager = DBManager(this, "database_name", null, 1)
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE) //로그인시 id 프로필 연동하기 위해 추가
 
         id = findViewById(R.id.id)
         pw = findViewById(R.id.pw)
@@ -39,6 +42,11 @@ class Login : AppCompatActivity() {
             val userpw = pw.text.toString().trim()
 
             if (dbManager.loginUser(userid, userpw)){
+                // 로그인 성공 시 아이디 저장
+                val editor = sharedPreferences.edit()
+                editor.putString("loggedInUser", userid)
+                editor.apply()
+
                 //Id, pw db 정보와 일치할 시 MYpage로 이동 .
                 val fragment = FindMentoMenti_fragment() // 프래그먼트 인스턴스 생성
                 val transaction = supportFragmentManager.beginTransaction()
@@ -51,7 +59,6 @@ class Login : AppCompatActivity() {
             }
 
         }
-
 
 
 

@@ -14,10 +14,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.matchingapp.DBManager
 
-class MypageFragment : Fragment() {
+class MyPage_fragment : Fragment() {
 
     private val IMAGE_PICK_REQUEST_CODE = 1000
     private val PERMISSION_REQUEST_CODE = 1001
@@ -34,10 +36,12 @@ class MypageFragment : Fragment() {
         val imageView: ImageView = view.findViewById(R.id.imageView)
 
         // 현재 로그인한 ID (SharedPreferences)
-        val currentUserId = "현재 로그인한 유저 ID"
+        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
+        val currentUserId = sharedPreferences.getString("loggedInUser", "정보 없음") ?: "정보 없음"
+
 
         val dbManager = DBManager(requireContext(), "AppDatabase.db", null, 1)
-        val cursor = dbManager.getProfileByUserId(currentUserId)
+        val cursor = dbManager.getProfileByName(currentUserId)
 
         if (cursor != null && cursor.moveToFirst()) {
             val profileName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
@@ -61,6 +65,11 @@ class MypageFragment : Fragment() {
             }
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         return view
     }
 
@@ -79,8 +88,10 @@ class MypageFragment : Fragment() {
 
 
     companion object {
-        fun newInstance(): MypageFragment {
-            return MypageFragment()
+        fun newInstance(): MyPage_fragment {
+            return MyPage_fragment()
         }
     }
+
+
 }
