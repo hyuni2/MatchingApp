@@ -1,6 +1,6 @@
 package com.example.matchingapp
 
-import DBManager
+import com.example.matchingapp.DBManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
