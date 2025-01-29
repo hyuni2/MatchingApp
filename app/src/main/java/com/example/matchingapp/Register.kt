@@ -28,10 +28,10 @@ class Register : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.login)
+        setContentView(R.layout.activity_register)
 
 
-        dbManager = DBManager(this)
+        dbManager = DBManager(this, "regitsterUser", null, 1)
 
         id = findViewById(R.id.newid)
         pw = findViewById(R.id.newpw)
@@ -53,10 +53,12 @@ class Register : AppCompatActivity() {
             } else {
                 //아니면 회원가입 성공.
                 Toast.makeText(this, "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.", Toast.LENGTH_SHORT).show()
-                delay(timeMillis = 2000)
-                val intent = Intent(this, Login::class.java)
-                startActivity(intent)
-                finish()
+                lifecycleScope.launch {
+                    delay(2000) // 2초 대기
+                    val intent = Intent(this@Register, Login::class.java)
+                    startActivity(intent)
+                    finish()
+                }
 
 
 
@@ -67,7 +69,7 @@ class Register : AppCompatActivity() {
 
 
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Register)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

@@ -2,7 +2,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.matchingapp.FindMentoMenti_fragment
-import com.example.matchingapp.MyPage_fragment
+import com.example.matchingapp.MyMatchingHistory_fragment
+import com.example.matchingapp.MypageFragment
 import com.example.matchingapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mypage -> {
-                    replaceFragment(MyPage_fragment())
+                    replaceFragment(MypageFragment())
                     true
                 }
                 R.id.myhistory -> {

@@ -1,5 +1,6 @@
 package com.example.matchingapp
 
+import DBManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +18,7 @@ import android.content.pm.PackageManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.matchingapp.DBManager
+
 
 class MyPage_fragment : Fragment() {
 

@@ -23,6 +23,23 @@ class DBManager(
                     "FOREIGN KEY(id) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
 
+        // 멘토멘티 구인 테이블 // 프로필 테이블 수정 및 참조로 추후 변경
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS MentorMenteeBoard (" +
+                    "userId TEXT, " +  // 작성자 ID
+                    "name TEXT, " +  // 작성자 이름
+                    "major TEXT, " + // 작성자 전공
+                    "isMentor BOOLEAN, " + // 작성자 멘토멘티
+                    "age INTEGER, " +  // 작성자 나이
+                    "studentNum TEXT, " +  // 학번
+                    "Content TEXT, " +  // 멘토/멘티 구인글
+                    //"createdAt DATETIME DEFAULT CURRENT_TIMESTAMP, " + // 작성 시간(최신 작성시간 기준으로 정렬시 추가)
+                    "FOREIGN KEY(userId) REFERENCES UserInfo(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    "FOREIGN KEY(major) REFERENCES Profile(major) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                    "FOREIGN KEY(isMentor) REFERENCES Profile(isMentor) ON DELETE CASCADE ON UPDATE CASCADE)"
+
+        )
+
         // MatchRequest 테이블 (새로운 테이블)
         //MyMatchHistory : 보낸신청/받은신청 필터링 기능용 new DB
         db.execSQL(
@@ -40,6 +57,7 @@ class DBManager(
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db!!.execSQL("DROP TABLE IF EXISTS userinfo")
         db.execSQL("DROP TABLE IF EXISTS profile")
+        db.execSQL("DROP TABLE IF EXISTS MentorMenteeBoard")
         onCreate(db)
     }
 
@@ -90,6 +108,12 @@ class DBManager(
 
     // Profile : 프로필 조회 (id로 조회)
     fun getProfileByName(id: String): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
+    }
+
+    // userid로 프로필 불러오기
+    fun getProfileByUserId(id: String): Cursor {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
     }
