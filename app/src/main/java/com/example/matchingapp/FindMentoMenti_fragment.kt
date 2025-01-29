@@ -53,7 +53,7 @@ class FindMentoMenti_fragment : Fragment() {
         //내 소개서 관리 클릭 시 -> 마이페이지 이동, 마이페이지 "프로필 수정"으로 소개서 수정.
         val btnManageProfile = view.findViewById<Button>(R.id.btnManageProfile)
 
-        val myPageFragment = MyPage_fragment()
+        val myPageFragment = MypageFragment()
         //Mypage로 이동할 프래그먼트 객체 생성
 
         //프래그먼트 이동 (마이페이지로)

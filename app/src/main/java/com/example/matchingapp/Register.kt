@@ -53,10 +53,12 @@ class Register : AppCompatActivity() {
             } else {
                 //아니면 회원가입 성공.
                 Toast.makeText(this, "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.", Toast.LENGTH_SHORT).show()
-                delay(timeMillis = 2000)
-                val intent = Intent(this, Login::class.java)
-                startActivity(intent)
-                finish()
+                lifecycleScope.launch {
+                    delay(2000) // 2초 대기
+                    val intent = Intent(this@Register, Login::class.java)
+                    startActivity(intent)
+                    finish()
+                }
 
 
 

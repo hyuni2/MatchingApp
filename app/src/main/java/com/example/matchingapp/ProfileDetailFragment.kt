@@ -55,7 +55,8 @@ class ProfileDetailFragment : Fragment() {
 
         // 버튼 동작 추가
         view.findViewById<Button>(R.id.applyButton).setOnClickListener {
-            Toast.makeText(getApplicationContext(), "매치 요청이 전달되었습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "매치 요청이 전달되었습니다.", Toast.LENGTH_SHORT).show()
+            //fragment에서는 requireContext()사용.
 
         }
         return view
