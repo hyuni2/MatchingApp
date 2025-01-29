@@ -29,7 +29,6 @@ class FindMentoMenti_fragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var dbManager : DBManager
     private lateinit var adapter: ProfileAdapter
 
 
@@ -48,6 +47,8 @@ class FindMentoMenti_fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_mento_menti, container, false)
+
+        val dbManager = DBManager(requireContext(), "AppDatabase.db", null, 1)
 
         //"내 소개서 관리" 버튼 클릭 이벤트
         //내 소개서 관리 클릭 시 -> 마이페이지 이동, 마이페이지 "프로필 수정"으로 소개서 수정.
