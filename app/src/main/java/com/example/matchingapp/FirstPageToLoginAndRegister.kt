@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class `FirstPage(ToLoginAndRegister)` : AppCompatActivity() {
+class FirstPageToLoginAndRegister : AppCompatActivity() {
     lateinit var login : Button
     lateinit var join : Button
 
