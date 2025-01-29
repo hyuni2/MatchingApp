@@ -92,6 +92,12 @@ class DBManager(
         return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
     }
 
+    // userid로 프로필 불러오기
+    fun getProfileByUserId(id: String): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
+    }
+
 
     // Profile : 프로필 수정 (이름 기준)
     fun updateProfile(id: String, isMentor: Boolean, major: String): Int {
