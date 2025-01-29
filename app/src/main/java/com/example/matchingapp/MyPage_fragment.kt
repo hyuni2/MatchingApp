@@ -1,59 +1,86 @@
 package com.example.matchingapp
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.app.Activity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.fragment.app.Fragment
+import com.example.matchingapp.DBManager
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class MypageFragment : Fragment() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MyPage_fragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MyPage_fragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val IMAGE_PICK_REQUEST_CODE = 1000
+    private val PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_page_fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_my_page_fragment, container, false)
+
+        // TextView 연결 및 프로필 정보 표시
+        val profileNameTextView: TextView = view.findViewById(R.id.ProfileName)
+        val profileMajorTextView: TextView = view.findViewById(R.id.ProfileMajor)
+        val imageView: ImageView = view.findViewById(R.id.imageView)
+
+        // 현재 로그인한 ID (SharedPreferences)
+        val currentUserId = "현재 로그인한 유저 ID"
+
+        val dbManager = DBManager(requireContext(), "AppDatabase.db", null, 1)
+        val cursor = dbManager.getProfileByUserId(currentUserId)
+
+        if (cursor != null && cursor.moveToFirst()) {
+            val profileName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+            val profileMajor = cursor.getString(cursor.getColumnIndexOrThrow("major"))
+
+            profileNameTextView.text = profileName
+            profileMajorTextView.text = profileMajor
+        } else {
+            profileNameTextView.text = "정보 없음"
+            profileMajorTextView.text = "정보 없음"
+        }
+        cursor?.close()
+
+        // 이미지 선택 기능 추가
+        imageView.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+                == PackageManager.PERMISSION_GRANTED) {
+                openGallery()
+            } else {
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_MEDIA_IMAGES), PERMISSION_REQUEST_CODE)
+            }
+        }
+
+        return view
     }
 
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            val imageUri: Uri = data.data!!
+            view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+        }
+    }
+
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyPage_fragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyPage_fragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance(): MypageFragment {
+            return MypageFragment()
+        }
     }
 }
