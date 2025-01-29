@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
-import com.example.matchingapp.DBManager
+
 
 class MypageFragment : Fragment() {
 
