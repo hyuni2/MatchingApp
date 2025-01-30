@@ -35,6 +35,12 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+
+        <!--네이버지도 API-->
+        <meta-data
+            android:name="com.naver.maps.clientId"
+            android:value="qv2tml0f23"/>
+
     </application>
 
 </manifest>
