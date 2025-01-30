@@ -14,9 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MatchingApp"
         tools:targetApi="31">
-        <activity
-            android:name=".Register"
-            android:exported="false" />
+
         <activity
             android:name="com.example.matchingapp.FirstPageToLoginAndRegister"
             android:exported="true">
@@ -25,6 +23,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Login"
+            android:exported="true" />
+
+        <activity
+            android:name=".Register"
+            android:exported="true" />
 
         <activity
             android:name="com.example.matchingapp.MainActivity"

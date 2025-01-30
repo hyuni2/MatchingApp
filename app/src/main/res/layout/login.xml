@@ -28,9 +28,9 @@
         android:backgroundTint="#8BE2DC"
         android:inputType="text"
         android:hint="@string/id_hint"
-        android:contentDescription="@string/id_description"
         android:autofillHints="username"
         android:layout_marginBottom="32dp" />
+    <!--android:contentDescription="@string/id_description"-->
 
     <TextView
         android:id="@+id/pw"
@@ -47,10 +47,10 @@
         android:backgroundTint="@color/cardview_dark_background"
         android:inputType="textPassword"
         android:hint="@string/password_hint"
-        android:contentDescription="@string/password_description"
+
         android:autofillHints="password"
         android:layout_marginBottom="32dp" />
-
+    <!--android:contentDescription="@string/password_description"-->
     <Button
         android:id="@+id/checkidpw"
         android:layout_width="170dp"
