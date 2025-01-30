@@ -16,12 +16,20 @@ class DBManager(
     // 테이블 생성
     override fun onCreate(db: SQLiteDatabase?) {
         db!!.execSQL(
-            "CREATE TABLE IF NOT EXISTS UserInfo (" + "id TEXT PRIMARY KEY, " + "password TEXT)"
+            "CREATE TABLE IF NOT EXISTS UserInfo (" +
+                    "id TEXT PRIMARY KEY, " +
+                    "password TEXT)"
         )
+
         db.execSQL(
-            "CREATE TABLE IF NOT EXISTS Profile (" + "id TEXT PRIMARY KEY, " + "name TEXT, " + "isMentor BOOLEAN, " + "major TEXT, " +
-                    "FOREIGN KEY(id) REFERENCES UserInfo(id) ON DELETE CASCADE)"
+            "CREATE TABLE IF NOT EXISTS Profile (" +
+                    "userid TEXT, " +  // Primary Key를 제거하고 Unique로 변경
+                    "name TEXT, " +
+                    "isMentor INTEGER, " +
+                    "major TEXT, " +
+                    "UNIQUE(userid))"
         )
+
 
         // 멘토멘티 구인 테이블 // 프로필 테이블 수정 및 참조로 추후 변경
         db.execSQL(
@@ -63,10 +71,11 @@ class DBManager(
 
 
 
-
-    // UserInfo : 회원가입시 아이디와 비밀번호 저장
+    // UserInfo : 회원가입시 아이디와 비밀번호 저장 (중복여부까지)
     fun registerUser(id: String, password: String): Long {
         val db = this.writableDatabase
+
+        // UserInfo 테이블에 아이디와 비밀번호 삽입
         val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ?", arrayOf(id))
 
         if (cursor.count > 0) {
@@ -74,16 +83,30 @@ class DBManager(
             return -1L // 아이디가 이미 존재하면 -1을 반환
         }
 
+        // UserInfo 테이블에 데이터 삽입
         val contentValues = ContentValues().apply {
             put("id", id)
             put("password", password)
         }
 
         val result = db.insert("UserInfo", null, contentValues)
+
+        // Profile 테이블에도 같은 id 추가
+        val profileValues = ContentValues().apply {
+            put("userid", id)  // Profile 테이블의 'userid'에 UserInfo의 id 저장
+            put("name", "")  // 기본값 설정
+            put("isMentor", 0)  // 기본값 설정 (0: 일반 사용자, 1: 멘토)
+            put("major", "")  // 기본값 설정
+        }
+
+        val profileResult = db.insert("Profile", null, profileValues)
+
         cursor.close()
 
-        return result
+        return if (result == -1L || profileResult == -1L) -1L else result
     }
+
+
 
     // UserInfo : 로그인시 아이디와 비밀번호 일치 여부 확인
     fun loginUser(id: String, password: String): Boolean {
@@ -94,58 +117,76 @@ class DBManager(
         return isValid
     }
 
-    // UserInfo : 아이디 중복 여부 확인 (중복시 true반환)
-    fun checkIdExist(id: String): Boolean {
-        val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ?", arrayOf(id))
-        val exists = cursor.count > 0
-        cursor.close()
-        return exists
-    }
-
-
-    // Profile : 프로필 등록
-    fun insertProfileData(id: String, isMentor: Boolean, major: String): Long {
-        val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put("id", id)
-            put("isMentor", isMentor)
-            put("major", major)
-        }
-        return db.insert("Profile", null, values)
-    }
-
 
     // Profile : 프로필 조회 (id로 조회)
-    fun getProfileByName(id: String): Cursor {
+    fun getProfileById(id: String): Cursor {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM Profile WHERE id = ?", arrayOf(id))
     }
 
-    // userid로 프로필 불러오기
-    fun getProfileByUserId(id: String): Cursor {
-        val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
-    }
 
+    // 닉네임이 이미 존재하는지 확인하는 메소드
+    fun checkIfNameExists(name: String): Boolean {
+        val db = this.readableDatabase
+        val query = "SELECT COUNT(*) FROM Profile WHERE name = ?"
+        val cursor = db.rawQuery(query, arrayOf(name))
+
+        cursor.moveToFirst()
+        val count = cursor.getInt(0)
+        cursor.close()
+        return count > 0
+    }
 
     // Profile : 프로필 수정 (이름 기준)
-    fun updateProfile(id: String, isMentor: Boolean, major: String): Int {
+    fun updateProfile(id: String, newName: String, newMajor: String): Boolean {
         val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put("isMentor", isMentor)
-            put("major", major)
+
+        // 닉네임 중복 확인
+        val isNameUsed = checkIfNameExists(newName)
+
+        if (isNameUsed) {
+            return false // 닉네임이 중복되었으면 업데이트 불가
         }
 
-        return db.update("Profile", values, "id = ?", arrayOf(id))
+        val values = ContentValues().apply {
+            put("name", newName)
+            put("major", newMajor)
+        }
+
+        // id를 기준으로 프로필 수정
+        val rowsAffected = db.update("Profile", values, "id = ?", arrayOf(id))
+        return rowsAffected > 0
     }
+
 
 
     // 회원 탈퇴: id 기준으로 삭제 (탈퇴시 프로필 까지 삭제하도록)
     fun deleteUser(id: String): Boolean {
         val db = this.writableDatabase
-        val rowsAffected = db.delete("UserInfo", "id = ?", arrayOf(id))
-        return rowsAffected > 0
+
+        // 트랜잭션을 사용하여 두 테이블에서 삭제를 한 번에 처리 (원자성 보장)
+        db.beginTransaction()
+        try {
+            // UserInfo 테이블에서 사용자 삭제
+            val rowsAffectedUserInfo = db.delete("UserInfo", "id = ?", arrayOf(id))
+
+            // Profile 테이블에서 사용자 프로필 삭제
+            val rowsAffectedProfile = db.delete("Profile", "id = ?", arrayOf(id))
+
+            // 두 테이블에서 모두 삭제가 성공적으로 이루어졌다면 커밋
+            if (rowsAffectedUserInfo > 0 && rowsAffectedProfile > 0) {
+                db.setTransactionSuccessful()
+                return true
+            } else {
+                return false
+            }
+        } catch (e: Exception) {
+            // 예외가 발생하면 롤백
+            return false
+        } finally {
+            // 트랜잭션 종료
+            db.endTransaction()
+        }
     }
 
 

@@ -35,6 +35,7 @@ class MyPage_fragment : Fragment() {
         val profileNameTextView: TextView = view.findViewById(R.id.ProfileName)
         val profileMajorTextView: TextView = view.findViewById(R.id.ProfileMajor)
         val imageView: ImageView = view.findViewById(R.id.imageView)
+        val textView3: TextView = view.findViewById(R.id.textView3)
 
         // 현재 로그인한 ID (SharedPreferences)
         val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
@@ -42,7 +43,15 @@ class MyPage_fragment : Fragment() {
 
 
         val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
-        val cursor = dbManager.getProfileByName(currentUserId)
+        val cursor = dbManager.getProfileById(currentUserId)
+
+
+        textView3.setOnClickListener {
+            // 액티비티 전환
+            val intent = Intent(requireContext(), ProfileEditActivity::class.java)
+            startActivity(intent)
+        }
+
 
         if (cursor != null && cursor.moveToFirst()) {
             val profileName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
@@ -51,8 +60,8 @@ class MyPage_fragment : Fragment() {
             profileNameTextView.text = profileName
             profileMajorTextView.text = profileMajor
         } else {
-            profileNameTextView.text = "정보 없음"
-            profileMajorTextView.text = "정보 없음"
+            profileNameTextView.text = "닉네임을 입력해주세요"
+            profileMajorTextView.text = "전공을 입력해주세요"
         }
         cursor?.close()
 
