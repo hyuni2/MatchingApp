@@ -10,8 +10,6 @@
     android:gravity="center"
     tools:context=".Login">
 
-    <!-- 디자인 요소 도입 (색 변경 등) -->
-
     <TextView
         android:id="@+id/enter_id"
         android:layout_width="wrap_content"
@@ -25,7 +23,6 @@
         android:id="@+id/id"
         android:layout_width="200dp"
         android:layout_height="48dp"
-        android:backgroundTint="#8BE2DC"
         android:inputType="text"
         android:hint="@string/id_hint"
         android:autofillHints="username"
@@ -47,15 +44,16 @@
         android:backgroundTint="@color/cardview_dark_background"
         android:inputType="textPassword"
         android:hint="@string/password_hint"
-
         android:autofillHints="password"
         android:layout_marginBottom="32dp" />
     <!--android:contentDescription="@string/password_description"-->
+
     <Button
         android:id="@+id/checkidpw"
         android:layout_width="170dp"
         android:layout_height="50dp"
         android:backgroundTint="#63C7C2"
         android:text="@string/complete" />
+
 
 </LinearLayout>

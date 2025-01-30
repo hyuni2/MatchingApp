@@ -8,6 +8,6 @@
     <string name="password_hint">비밀번호</string>
     <string name="id_description">아이디 입력 필드</string>
     <string name="password_description">비밀번호 입력 필드</string>
-    <string name="complete">완료</string>
+    <string name="complete">로그인하기</string>
     <string name="register">회원가입</string>
 </resources>

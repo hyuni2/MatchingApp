@@ -20,10 +20,10 @@ import java.util.logging.Handler
 
 
 class Register : AppCompatActivity() {
-    lateinit var id : EditText
-    lateinit var pw : EditText
+    lateinit var newid : EditText
+    lateinit var newpw : EditText
     lateinit var Register : Button
-    private lateinit var dbManager: DBManager
+    lateinit var dbManager: DBManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,19 +31,19 @@ class Register : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
 
-        dbManager = DBManager(this, "regitsterUser", null, 1)
+        dbManager = DBManager(this, "MatchingAppDB", null, 1)
 
-        id = findViewById(R.id.newid)
-        pw = findViewById(R.id.newpw)
+        newid = findViewById(R.id.newid)
+        newpw = findViewById(R.id.newpw)
         Register = findViewById(R.id.Register)
 
 
         Register.setOnClickListener{
-            val newid = id.text.toString().trim()
+            val newid = newid.text.toString().trim()
             //입력값 받아 문자열로 변환 뒤 공백제거
-            val newpw = pw.text.toString().trim()
+            val newpw = newpw.text.toString().trim()
 
-           var result =  dbManager.registerUser(newid, newpw)
+            var result =  dbManager.registerUser(newid, newpw)
 
             if (result == -1L)
             //아이디가 이미 존재할 경우 오류 메시지 출력

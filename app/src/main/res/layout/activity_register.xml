@@ -15,7 +15,7 @@
         <!-- 디자인 요소 도입 (색 변경 등) -->
 
         <TextView
-            android:id="@+id/newid"
+            android:id="@+id/id_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/enter_id"
@@ -24,7 +24,7 @@
             android:layout_marginTop="32dp" />
 
         <EditText
-            android:id="@+id/newpw"
+            android:id="@+id/newid"
             android:layout_width="200dp"
             android:layout_height="48dp"
             android:backgroundTint="#8BE2DC"
@@ -40,7 +40,7 @@
             android:layout_marginTop="32dp" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/newpw"
             android:layout_width="200dp"
             android:layout_height="48dp"
             android:backgroundTint="@color/cardview_dark_background"

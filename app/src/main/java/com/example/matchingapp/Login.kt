@@ -24,11 +24,10 @@ class Login : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.login)
 
 
-        dbManager = DBManager(this, "database_name", null, 1)
+        dbManager = DBManager(this, "MatchingAppDB", null, 1)
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE) //로그인시 id 프로필 연동하기 위해 추가
 
         id = findViewById(R.id.id)
@@ -47,12 +46,10 @@ class Login : AppCompatActivity() {
                 editor.putString("loggedInUser", userid)
                 editor.apply()
 
-                //Id, pw db 정보와 일치할 시 MYpage로 이동 .
-                val fragment = FindMentoMenti_fragment() // 프래그먼트 인스턴스 생성
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragmentContainer, fragment) // R.id.fragment_container는 프래그먼트를 담을 컨테이너의 ID입니다.
-                transaction.addToBackStack(null) // 백스택에 추가하여 뒤로 가기 버튼을 눌렀을 때 이전 화면으로 돌아갈 수 있게 합니다.
-                transaction.commit()
+                // 로그인 후 MainActivity로 이동
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()  // 로그인 화면 종료
             } else {
                 //Id, pw db 정보와 불일치할 시 오류메시지 출력. (개발조건)
                 Toast.makeText(this, "잘못된 정보입니다.", Toast.LENGTH_SHORT).show()

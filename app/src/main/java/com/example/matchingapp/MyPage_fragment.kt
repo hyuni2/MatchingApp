@@ -41,7 +41,7 @@ class MyPage_fragment : Fragment() {
         val currentUserId = sharedPreferences.getString("loggedInUser", "정보 없음") ?: "정보 없음"
 
 
-        val dbManager = DBManager(requireContext(), "AppDatabase.db", null, 1)
+        val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
         val cursor = dbManager.getProfileByName(currentUserId)
 
         if (cursor != null && cursor.moveToFirst()) {

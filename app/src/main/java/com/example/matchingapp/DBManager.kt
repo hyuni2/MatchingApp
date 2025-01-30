@@ -19,7 +19,7 @@ class DBManager(
             "CREATE TABLE IF NOT EXISTS UserInfo (" + "id TEXT PRIMARY KEY, " + "password TEXT)"
         )
         db.execSQL(
-            "CREATE TABLE IF NOT EXISTS Profile (" + "id TEXT PRIMARY KEY, " + "isMentor BOOLEAN, " + "major TEXT, " +
+            "CREATE TABLE IF NOT EXISTS Profile (" + "id TEXT PRIMARY KEY, " + "name TEXT, " + "isMentor BOOLEAN, " + "major TEXT, " +
                     "FOREIGN KEY(id) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
 
@@ -67,12 +67,22 @@ class DBManager(
     // UserInfo : 회원가입시 아이디와 비밀번호 저장
     fun registerUser(id: String, password: String): Long {
         val db = this.writableDatabase
-        val values = ContentValues().apply {
+        val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ?", arrayOf(id))
+
+        if (cursor.count > 0) {
+            cursor.close()
+            return -1L // 아이디가 이미 존재하면 -1을 반환
+        }
+
+        val contentValues = ContentValues().apply {
             put("id", id)
             put("password", password)
         }
-        // 아이디가 이미 존재하면 저장하지 않음 (다시입력하라는 팝업 필요)
-        return db.insertWithOnConflict("UserInfo", null, values, SQLiteDatabase.CONFLICT_IGNORE)
+
+        val result = db.insert("UserInfo", null, contentValues)
+        cursor.close()
+
+        return result
     }
 
     // UserInfo : 로그인시 아이디와 비밀번호 일치 여부 확인
@@ -109,7 +119,7 @@ class DBManager(
     // Profile : 프로필 조회 (id로 조회)
     fun getProfileByName(id: String): Cursor {
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM Profile WHERE name = ?", arrayOf(id))
+        return db.rawQuery("SELECT * FROM Profile WHERE id = ?", arrayOf(id))
     }
 
     // userid로 프로필 불러오기
