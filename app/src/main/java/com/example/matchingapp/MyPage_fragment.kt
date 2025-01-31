@@ -44,6 +44,7 @@ class MyPage_fragment : Fragment() {
         val profileNameTextView: TextView = view.findViewById(R.id.ProfileName)
         val profileMajorTextView: TextView = view.findViewById(R.id.ProfileMajor)
         val imageView: ImageView = view.findViewById(R.id.imageView)
+        val textView2: TextView = view.findViewById(R.id.textView2)
         val textView3: TextView = view.findViewById(R.id.textView3)
 
         /*네이버 지도
@@ -60,9 +61,14 @@ class MyPage_fragment : Fragment() {
         val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
         val cursor = dbManager.getProfileById(currentUserId)
 
+        textView2.setOnClickListener {
+            // 계정탈퇴 액티비티 전환
+            val intent = Intent(requireContext(), UserDeleteActivity::class.java)
+            startActivity(intent)
+        }
 
         textView3.setOnClickListener {
-            // 액티비티 전환
+            // 프로필수정 액티비티 전환
             val intent = Intent(requireContext(), ProfileEditActivity::class.java)
             startActivity(intent)
         }
@@ -115,14 +121,23 @@ class MyPage_fragment : Fragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        loadImage()
 
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadImage() // 프래그먼트가 다시 생성될 때 이미지 로드
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadImage() // 프래그먼트가 화면에 보일 때마다 이미지 로드
+    }
+
     private fun saveImageUri(uri: Uri) {
         val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
-        sharedPreferences.edit().putString("profileImageUri", uri.toString()).apply()
+        sharedPreferences.edit().putString("profileImageUri", uri.toString()).commit()
     }
 
     private fun openGallery() {

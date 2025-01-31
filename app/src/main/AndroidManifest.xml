@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MatchingApp"
         tools:targetApi="31">
         <activity
+            android:name=".UserDeleteActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileEditActivity"
             android:exported="false" />
         <activity
@@ -34,13 +37,10 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
-
-        <!--네이버지도 API-->
+            android:exported="true" /> <!-- 네이버지도 API -->
         <meta-data
             android:name="com.naver.maps.clientId"
-            android:value="qv2tml0f23"/>
-
+            android:value="qv2tml0f23" />
     </application>
 
 </manifest>

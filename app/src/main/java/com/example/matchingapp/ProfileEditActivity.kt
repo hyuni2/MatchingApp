@@ -17,7 +17,6 @@ class ProfileEditActivity : AppCompatActivity() {
         val editName: EditText = findViewById(R.id.editName)
         val editMajor: EditText = findViewById(R.id.editMajor)
         val profileEditDoneButton: Button = findViewById(R.id.ProfileEditDoneButton)
-        val userDeleteButton: Button = findViewById(R.id.UserDeleteButton)
 
         // 현재 로그인한 ID (SharedPreferences)
         val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
@@ -48,30 +47,6 @@ class ProfileEditActivity : AppCompatActivity() {
             } else {
                 // 닉네임이나 전공이 비어있으면 오류 메시지 출력
                 Toast.makeText(this, "닉네임과 전공을 모두 입력해주세요.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        // 회원 탈퇴 버튼 클릭 리스너
-        userDeleteButton.setOnClickListener {
-            // DB에서 사용자 정보 삭제
-            val deleteSuccess = dbManager.deleteUser(currentUserId)
-
-            if (deleteSuccess) {
-                // 탈퇴 성공하면 토스트 메시지 출력
-                Toast.makeText(this, "회원 탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
-                // SharedPreferences에서 로그인된 사용자 정보 삭제
-                val editor = sharedPreferences.edit()
-                editor.remove("loggedInUser")
-                editor.apply()
-
-                // 시작 화면으로 돌아가기 (MainActivity로 이동)
-                val intent = Intent(this, FirstPageToLoginAndRegister::class.java)
-                startActivity(intent)
-                finish() // 현재 액티비티 종료
-            } else {
-                // 탈퇴 실패 메시지
-                Toast.makeText(this, "회원 탈퇴에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
 
