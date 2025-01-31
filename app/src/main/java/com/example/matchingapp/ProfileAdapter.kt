@@ -1,3 +1,5 @@
+package com.example.matchingapp
+
 import android.database.Cursor
 import android.provider.ContactsContract
 import android.view.LayoutInflater
