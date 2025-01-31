@@ -118,10 +118,10 @@ class DBManager(
     }
 
 
-    // Profile : 프로필 조회 (id로 조회)
+    // Profile : 프로필 조회 (userid로 조회)
     fun getProfileById(id: String): Cursor {
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM Profile WHERE id = ?", arrayOf(id))
+        return db.rawQuery("SELECT * FROM Profile WHERE userid = ?", arrayOf(id))
     }
 
 
@@ -154,7 +154,7 @@ class DBManager(
         }
 
         // id를 기준으로 프로필 수정
-        val rowsAffected = db.update("Profile", values, "id = ?", arrayOf(id))
+        val rowsAffected = db.update("Profile", values, "userid = ?", arrayOf(id))
         return rowsAffected > 0
     }
 
@@ -171,7 +171,7 @@ class DBManager(
             val rowsAffectedUserInfo = db.delete("UserInfo", "id = ?", arrayOf(id))
 
             // Profile 테이블에서 사용자 프로필 삭제
-            val rowsAffectedProfile = db.delete("Profile", "id = ?", arrayOf(id))
+            val rowsAffectedProfile = db.delete("Profile", "userid = ?", arrayOf(id))
 
             // 두 테이블에서 모두 삭제가 성공적으로 이루어졌다면 커밋
             if (rowsAffectedUserInfo > 0 && rowsAffectedProfile > 0) {

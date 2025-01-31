@@ -57,8 +57,8 @@ class MyPage_fragment : Fragment() {
             val profileName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
             val profileMajor = cursor.getString(cursor.getColumnIndexOrThrow("major"))
 
-            profileNameTextView.text = profileName
-            profileMajorTextView.text = profileMajor
+            profileNameTextView.text = profileName.ifEmpty{"닉네임을 입력해주세요"}
+            profileMajorTextView.text = profileMajor.ifEmpty{"전공을 입력해주세요"}
         } else {
             profileNameTextView.text = "닉네임을 입력해주세요"
             profileMajorTextView.text = "전공을 입력해주세요"
@@ -80,7 +80,14 @@ class MyPage_fragment : Fragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        loadImage()
+
         return view
+    }
+
+    private fun saveImageUri(uri: Uri) {
+        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
+        sharedPreferences.edit().putString("profileImageUri", uri.toString()).apply()
     }
 
     private fun openGallery() {
@@ -88,11 +95,23 @@ class MyPage_fragment : Fragment() {
         startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE)
     }
 
+    private fun loadImage() {
+        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
+        val imageUriString = sharedPreferences.getString("profileImageUri", null)
+
+        if (imageUriString != null) {
+            val imageUri = Uri.parse(imageUriString)
+            view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val imageUri: Uri = data.data!!
             view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+
+            saveImageUri(imageUri)
         }
     }
 

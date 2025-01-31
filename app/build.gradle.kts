@@ -48,6 +48,9 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation("com.google.android.material:material:1.4.0")
         //chip component(필터링) 위해 추가한 dependancy -> 오류시 수정
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+        //mypage 프로필 이미지 유지 위해 Glide 라이브러리 추가
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
