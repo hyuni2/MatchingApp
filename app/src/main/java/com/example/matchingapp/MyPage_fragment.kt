@@ -19,6 +19,9 @@ import android.content.pm.PackageManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+
 
 
 class MyPage_fragment : Fragment() {
@@ -133,17 +136,29 @@ class MyPage_fragment : Fragment() {
 
         if (imageUriString != null) {
             val imageUri = Uri.parse(imageUriString)
-            view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+
+            val imageView = view?.findViewById<ImageView>(R.id.imageView)
+            if (imageView != null) {
+                Glide.with(this)
+                    .load(imageUri)
+                    .into(imageView)  // Glide를 사용하여 이미지 표시
+            }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // 프로필 이미지로딩 및 유지
         if (requestCode == IMAGE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val imageUri: Uri = data.data!!
-            view?.findViewById<ImageView>(R.id.imageView)?.setImageURI(imageUri)
+            saveImageUri(imageUri)  // 선택한 이미지 URI 저장
 
-            saveImageUri(imageUri)
+            val imageView = view?.findViewById<ImageView>(R.id.imageView)
+            if (imageView != null) {
+                Glide.with(this)
+                    .load(imageUri)
+                    .into(imageView)  // Glide로 이미지 로딩
+            }
         }
 
         // 네이버 지도에서 선택한 위치 받아오기
