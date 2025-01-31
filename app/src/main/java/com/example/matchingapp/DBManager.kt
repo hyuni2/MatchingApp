@@ -27,6 +27,7 @@ class DBManager(
                     "name TEXT, " +
                     "isMentor INTEGER, " +
                     "major TEXT, " +
+                    "intro TEXT, " +
                     "UNIQUE(userid))"
         )
 
@@ -66,6 +67,7 @@ class DBManager(
         db!!.execSQL("DROP TABLE IF EXISTS userinfo")
         db.execSQL("DROP TABLE IF EXISTS profile")
         db.execSQL("DROP TABLE IF EXISTS MentorMenteeBoard")
+        db.execSQL("DROP TABLE IF EXISTS MatchRequest")
         onCreate(db)
     }
 
@@ -97,6 +99,7 @@ class DBManager(
             put("name", "")  // 기본값 설정
             put("isMentor", 0)  // 기본값 설정 (0: 일반 사용자, 1: 멘토)
             put("major", "")  // 기본값 설정
+            put("intro", "")
         }
 
         val profileResult = db.insert("Profile", null, profileValues)
@@ -138,7 +141,7 @@ class DBManager(
     }
 
     // Profile : 프로필 수정 (이름 기준)
-    fun updateProfile(id: String, newName: String, newMajor: String): Boolean {
+    fun updateProfile(id: String, newName: String, newMajor: String, isMentor: Int, newIntro: String): Boolean {
         val db = this.writableDatabase
 
         // 닉네임 중복 확인
@@ -149,14 +152,17 @@ class DBManager(
         }
 
         val values = ContentValues().apply {
-            put("name", newName)
-            put("major", newMajor)
+            put("name", newName)    // 닉네임 업데이트
+            put("major", newMajor)  // 전공 업데이트
+            put("isMentor", isMentor) // 멘토/멘티 여부 (1: 멘토, 0: 멘티)
+            put("intro", newIntro)  // 소개글 업데이트
         }
 
         // id를 기준으로 프로필 수정
         val rowsAffected = db.update("Profile", values, "userid = ?", arrayOf(id))
         return rowsAffected > 0
     }
+
 
 
 
@@ -195,6 +201,26 @@ class DBManager(
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM Profile", null)
     }
+
+
+    fun insertIntoMentorMenteeBoard(userId: String, name: String, major: String, isMentor: String, content: String): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("userId", userId)
+            put("name", name)
+            put("major", major)
+            put("isMentor", isMentor)
+            put("Content", content)
+        }
+
+        val result = db.insert("MentorMenteeBoard", null, values)
+        db.close()
+        return result != -1L
+    }
+
+
+
+
 
     //이하 4개 테이블 전부 신청 히스토리 관련 추가 DB
 

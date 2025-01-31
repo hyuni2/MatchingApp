@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.matchingapp.Profile
 import com.example.matchingapp.R
 
+
 class ProfileAdapter(
-    val cursor: Cursor,
+    var cursor: Cursor,
     private val onItemClick: (Profile) -> Unit // 클릭 리스너 추가
 ) : RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder>() {
 
@@ -19,9 +20,17 @@ class ProfileAdapter(
         return ProfileViewHolder(view)
     }
 
+    fun swapCursor(newCursor: Cursor) {
+        if (cursor != null && !cursor.isClosed) { // 현재 커서가 유효하면 닫기
+            cursor.close()
+        }
+        cursor = newCursor  // 새 커서로 교체
+        notifyDataSetChanged()  // 데이터 변경 알리기
+    }
+
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
         if (cursor.moveToPosition(position)) {
-            val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+            val userid = cursor.getString(cursor.getColumnIndexOrThrow("userid"))
             val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
             val isMentor = cursor.getInt(cursor.getColumnIndexOrThrow("isMentor")) > 0
             val major = cursor.getString(cursor.getColumnIndexOrThrow("major"))
@@ -29,7 +38,7 @@ class ProfileAdapter(
         //프로필  DB 에 소개글 추가 가능한지 문의하기.
 
 
-            val profile = Profile(id, name, isMentor, major, intro) // Profile 객체 생성
+            val profile = Profile(userid, name, isMentor, major, intro) // Profile 객체 생성
             holder.bind(profile)
             holder.itemView.setOnClickListener {
                 onItemClick(profile) // 클릭 시 리스너 호출

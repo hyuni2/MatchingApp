@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -57,19 +59,13 @@ class FindMentoMenti_fragment : Fragment() {
         val myPageFragment = MyPage_fragment()
         //Mypage로 이동할 프래그먼트 객체 생성
 
-        //프래그먼트 이동 (마이페이지로)
-        btnManageProfile.setOnClickListener{
-            val fragmentManager: FragmentManager = getSupportFragmentManager()
-            val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-            // Fragment 교체
-            fragmentTransaction.replace(R.id.fragmentContainer, myPageFragment);
-            fragmentTransaction.addToBackStack(null)
-
-            // 변경 적용
-            fragmentTransaction.commit();
-
-
+        btnManageProfile.setOnClickListener {
+            // ProfileEditActivity로 이동하는 인텐트 생성
+            val intent = Intent(requireContext(), ProfileEditActivity::class.java)
+            // 액티비티 전환
+            startActivityForResult(intent, 100)
         }
+
 
         //RecyclerView 초기화
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvMentoMentiList)
@@ -85,6 +81,17 @@ class FindMentoMenti_fragment : Fragment() {
         return view
 
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 100 && resultCode == AppCompatActivity.RESULT_OK) {
+            // 프로필 수정이 완료되었으므로 데이터베이스에서 다시 가져오기
+            val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
+            val cursor = dbManager.getAllProfiles()
+            adapter.swapCursor(cursor)
+        }
+    }
+
 
     private fun getSupportFragmentManager(): FragmentManager {
         TODO("Not yet implemented")
@@ -113,6 +120,21 @@ class FindMentoMenti_fragment : Fragment() {
             .replace(R.id.fragmentContainer, detailFragment) // fragmentContainer는 메인 레이아웃의 ID
             .addToBackStack(null) // 뒤로 가기 지원
             .commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // ProfileEditActivity에서 프로필 수정이 완료되었으면 데이터 갱신
+        val isProfileUpdated = activity?.intent?.getBooleanExtra("isProfileUpdated", false) ?: false
+
+        if (isProfileUpdated) {
+            val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
+            val cursor = dbManager.getAllProfiles() // 데이터베이스에서 최신 프로필 리스트 가져오기
+
+            // 어댑터에 새로운 데이터 설정
+            adapter.swapCursor(cursor)  // ProfileAdapter에 새로운 커서 전달
+        }
     }
 
 
