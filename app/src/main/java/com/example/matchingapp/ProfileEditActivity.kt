@@ -31,6 +31,24 @@ class ProfileEditActivity : AppCompatActivity() {
         // DBManager 초기화
         val dbManager = DBManager(this, "MatchingAppDB", null, 1)
 
+        // 기존 프로필 정보 불러오기
+        if (currentUserId != "정보 없음") {
+            val profile = dbManager.getProfile(currentUserId)  // DB에서 프로필 정보 가져오기
+            profile?.let {
+                // 기존 정보가 있을 경우, EditText에 세팅
+                editName.setText(it.name)
+                editMajor.setText(it.major)
+                profileIntro.setText(it.intro)
+
+                // 멘토/멘티 체크박스 설정
+                val isMentor = when {
+                    mentorCheckBox.isChecked -> 1
+                    menteeCheckBox.isChecked -> 0
+                    else -> -1 // 멘토도 아니고 멘티도 아닐 경우
+                }
+            }
+        }
+
         // 버튼 비활성화 초기화
         profileEditDoneButton.isEnabled = false
 
@@ -79,7 +97,7 @@ class ProfileEditActivity : AppCompatActivity() {
                 setResult(RESULT_OK, resultIntent)
                 finish()
             } else {
-                Toast.makeText(this, "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "프로필 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -195,6 +195,37 @@ class DBManager(
         }
     }
 
+    // 기존 프로필 정보를 가져오는 메서드
+    fun getProfile(userId: String): Profile? {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM Profile WHERE userId = ?", arrayOf(userId))
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // 컬럼 인덱스를 안전하게 가져오기
+            val nameColumnIndex = cursor.getColumnIndex("name")
+            val majorColumnIndex = cursor.getColumnIndex("major")
+            val introColumnIndex = cursor.getColumnIndex("intro")
+            val isMentorColumnIndex = cursor.getColumnIndex("isMentor")
+
+            // 컬럼 인덱스가 -1이 아닌지 확인하고 데이터 추출
+            if (nameColumnIndex != -1 && majorColumnIndex != -1 && introColumnIndex != -1 && isMentorColumnIndex != -1) {
+                val name = cursor.getString(nameColumnIndex) // 이름
+                val major = cursor.getString(majorColumnIndex) ?: "" // major가 null일 경우 빈 문자열 처리
+                val intro = cursor.getString(introColumnIndex) ?: "" // intro가 null일 경우 빈 문자열 처리
+                val isMentor = cursor.getInt(isMentorColumnIndex) // isMentor가 null이 아닐 경우 처리
+
+                cursor.close()
+                return Profile(userId, name, isMentor, major, intro) // Profile 객체 반환
+            }
+        }
+
+        cursor.close()
+        return null // 프로필이 없을 경우 null 반환
+    }
+
+
+
+
 
     // Profile : 모든 프로필 조회, 멘토멘티 찾기 페이지 프로필 로딩용. (임의추가)
     fun getAllProfiles(): Cursor {
@@ -203,20 +234,6 @@ class DBManager(
     }
 
 
-    fun insertIntoMentorMenteeBoard(userId: String, name: String, major: String, isMentor: String, content: String): Boolean {
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put("userId", userId)
-            put("name", name)
-            put("major", major)
-            put("isMentor", isMentor)
-            put("Content", content)
-        }
-
-        val result = db.insert("MentorMenteeBoard", null, values)
-        db.close()
-        return result != -1L
-    }
 
 
 
