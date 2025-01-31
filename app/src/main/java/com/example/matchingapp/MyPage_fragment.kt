@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Button
 import android.app.Activity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,6 +26,11 @@ class MyPage_fragment : Fragment() {
     private val IMAGE_PICK_REQUEST_CODE = 1000
     private val PERMISSION_REQUEST_CODE = 1001
 
+    // 네이버 지도
+    private lateinit var tvUserLocation: TextView
+    private lateinit var btnSetLocation: Button
+    //
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,8 +43,14 @@ class MyPage_fragment : Fragment() {
         val imageView: ImageView = view.findViewById(R.id.imageView)
         val textView3: TextView = view.findViewById(R.id.textView3)
 
+        /*네이버 지도
+        tvUserLocation = view.findViewById(R.id.tvUserLocation) // 현재 위치 표시 텍스트뷰
+        btnSetLocation = view.findViewById(R.id.btnSetLocation) // 위치 설정 버튼
+        */
+
         // 현재 로그인한 ID (SharedPreferences)
-        val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
         val currentUserId = sharedPreferences.getString("loggedInUser", "정보 없음") ?: "정보 없음"
 
 
@@ -65,13 +77,33 @@ class MyPage_fragment : Fragment() {
         }
         cursor?.close()
 
+        /*네이버 지도
+        // 기존에 저장된 위치 불러오기
+        val storedLocation = sharedPreferences.getString("user_location", "현재 위치: 설정되지 않음")
+        tvUserLocation.text = storedLocation
+
+        // "위치 설정" 버튼 클릭 시 네이버 지도 화면 실행
+        btnSetLocation.setOnClickListener {
+            val intent = Intent(requireContext(), NaverMapActivity::class.java)
+            startActivityForResult(intent, LOCATION_REQUEST_CODE)
+        }
+        */
+
         // 이미지 선택 기능 추가
         imageView.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
-                == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                )
+                == PackageManager.PERMISSION_GRANTED
+            ) {
                 openGallery()
             } else {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_MEDIA_IMAGES), PERMISSION_REQUEST_CODE)
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                    PERMISSION_REQUEST_CODE
+                )
             }
         }
 
@@ -113,14 +145,23 @@ class MyPage_fragment : Fragment() {
 
             saveImageUri(imageUri)
         }
+
+        // 네이버 지도에서 선택한 위치 받아오기
+        if (requestCode == LOCATION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedLocation = data?.getStringExtra("selected_location") ?: return
+            tvUserLocation.text = "현재 위치: $selectedLocation"
+
+            // 위치를 SharedPreferences에 저장
+            val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
+            sharedPreferences.edit().putString("user_location", "현재 위치: $selectedLocation").apply()
+        }
     }
 
-
     companion object {
+        private const val LOCATION_REQUEST_CODE = 1001
+
         fun newInstance(): MyPage_fragment {
             return MyPage_fragment()
         }
     }
-
-
 }
