@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.widget.EditText
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -33,6 +34,11 @@ class FindMentoMenti_fragment : Fragment() {
     private var param2: String? = null
     private lateinit var adapter: ProfileAdapter
 
+    // 검색기능
+    private lateinit var dbManager: DBManager
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var searchBar: EditText
+    private lateinit var btnSearch: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +76,31 @@ class FindMentoMenti_fragment : Fragment() {
         //RecyclerView 초기화
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvMentoMentiList)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // 검색기능
+        searchBar = view.findViewById(R.id.searchBar)
+        btnSearch = view.findViewById(R.id.btnSearch)
+
+        fun loadProfiles(keyword: String) {
+            val cursor = if (keyword.isEmpty()) {
+                dbManager.getAllProfiles() // 🔥 전체 데이터 로드
+            } else {
+                dbManager.searchProfiles(keyword) // 🔥 검색 실행
+            }
+
+            adapter = ProfileAdapter(cursor) { profile ->
+                navigateToDetailFragment(profile)
+            }
+            recyclerView.adapter = adapter
+        }
+
+        loadProfiles("")
+
+        btnSearch.setOnClickListener {
+            val keyword = searchBar.text.toString().trim()
+            loadProfiles(keyword)
+        }
+        //
 
         //cursor를 adapter에 연결
         val cursor = dbManager.getAllProfiles()

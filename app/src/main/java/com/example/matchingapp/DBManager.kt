@@ -261,6 +261,15 @@ class DBManager(
         }
         return db.update("MatchRequest", values, "id = ?", arrayOf(requestId.toString()))
     }
+
+    // 검색기능
+    fun searchProfiles(keyword: String): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery(
+            "SELECT * FROM Profile WHERE name LIKE ? OR major LIKE ? OR intro LIKE ?",
+            arrayOf("%$keyword%", "%$keyword%", "%$keyword%")
+        )
+    }
 }
 
 
