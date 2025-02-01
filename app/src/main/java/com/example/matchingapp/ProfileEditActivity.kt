@@ -9,6 +9,7 @@ import android.widget.Toast
 import android.widget.CheckBox
 import android.text.Editable
 import android.text.TextWatcher
+import com.example.matchingapp.DBManager
 
 class ProfileEditActivity : AppCompatActivity() {
 
@@ -19,7 +20,7 @@ class ProfileEditActivity : AppCompatActivity() {
         // UI 요소 연결
         val editName: EditText = findViewById(R.id.editName)
         val editMajor: EditText = findViewById(R.id.editMajor)
-        val profileIntro: EditText = findViewById(R.id.Profileintro)  // 소개글 입력란
+        val profileintro: EditText = findViewById(R.id.Profileintro)  // 소개글 입력란
         val profileEditDoneButton: Button = findViewById(R.id.ProfileEditDoneButton)
         val mentorCheckBox: CheckBox = findViewById(R.id.MentorCheckBox)  // 멘토 체크박스
         val menteeCheckBox: CheckBox = findViewById(R.id.MenteeCheckBox)  // 멘티 체크박스
@@ -38,13 +39,22 @@ class ProfileEditActivity : AppCompatActivity() {
                 // 기존 정보가 있을 경우, EditText에 세팅
                 editName.setText(it.name)
                 editMajor.setText(it.major)
-                profileIntro.setText(it.intro)
+                profileintro.setText(it.intro)
 
                 // 멘토/멘티 체크박스 설정
-                val isMentor = when {
-                    mentorCheckBox.isChecked -> 1
-                    menteeCheckBox.isChecked -> 0
-                    else -> -1 // 멘토도 아니고 멘티도 아닐 경우
+                when (it.isMentor) {
+                    1 -> {
+                        mentorCheckBox.isChecked = true
+                        menteeCheckBox.isChecked = false
+                    }
+                    0 -> {
+                        mentorCheckBox.isChecked = false
+                        menteeCheckBox.isChecked = true
+                    }
+                    else -> {
+                        mentorCheckBox.isChecked = false
+                        menteeCheckBox.isChecked = false
+                    }
                 }
             }
         }
@@ -55,7 +65,7 @@ class ProfileEditActivity : AppCompatActivity() {
         // 입력 필드와 체크박스 상태 변경 시 버튼 활성화 체크
         val checkFields = {
             profileEditDoneButton.isEnabled =
-                editName.text.isNotEmpty() && editMajor.text.isNotEmpty() && profileIntro.text.isNotEmpty() &&
+                editName.text.isNotEmpty() && editMajor.text.isNotEmpty() && profileintro.text.isNotEmpty() &&
                         (mentorCheckBox.isChecked || menteeCheckBox.isChecked)
         }
 
@@ -70,7 +80,7 @@ class ProfileEditActivity : AppCompatActivity() {
 
         editName.addTextChangedListener(textWatcher)
         editMajor.addTextChangedListener(textWatcher)
-        profileIntro.addTextChangedListener(textWatcher)
+        profileintro.addTextChangedListener(textWatcher)
 
         // 체크박스 변경 감지
         mentorCheckBox.setOnCheckedChangeListener { _, _ -> checkFields() }
@@ -79,16 +89,17 @@ class ProfileEditActivity : AppCompatActivity() {
         profileEditDoneButton.setOnClickListener {
             val newName = editName.text.toString()
             val newMajor = editMajor.text.toString()
-            val newIntro = profileIntro.text.toString()  // 소개글
-
-            val isMentor = when {
+            val newisMentor = when {
                 mentorCheckBox.isChecked -> 1
                 menteeCheckBox.isChecked -> 0
                 else -> -1
             }
+            val newIntro = profileintro.text.toString()  // 소개글
+
+
 
             // 프로필 업데이트
-            val updateSuccess = dbManager.updateProfile(currentUserId, newName, newMajor, isMentor, newIntro)
+            val updateSuccess = dbManager.updateProfile(currentUserId, newName, newisMentor, newMajor, newIntro)
 
             if (updateSuccess) {
                 Toast.makeText(this, "프로필이 성공적으로 업데이트되었습니다.", Toast.LENGTH_SHORT).show()
@@ -98,6 +109,18 @@ class ProfileEditActivity : AppCompatActivity() {
                 finish()
             } else {
                 Toast.makeText(this, "프로필 업데이트에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        // 체크박스 중복 선택 방지
+        mentorCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                menteeCheckBox.isChecked = false  // 멘티 체크박스 해제
+            }
+        }
+
+        menteeCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                mentorCheckBox.isChecked = false  // 멘토 체크박스 해제
             }
         }
     }

@@ -94,7 +94,7 @@ class FindMentoMenti_fragment : Fragment() {
         // 데이터 전달
         val bundle = Bundle().apply {
             putString("name", profile.name)
-            putString("role", if (profile.isMentor) "멘토" else "멘티")
+            putString("isMentor", if (profile.isMentor == 1) "멘토" else "멘티")
             putString("major", profile.major)
             putString("intro", profile.intro)
         }

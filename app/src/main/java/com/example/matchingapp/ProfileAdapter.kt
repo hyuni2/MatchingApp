@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.database.getIntOrNull
 import androidx.recyclerview.widget.RecyclerView
 import com.example.matchingapp.Profile
 import com.example.matchingapp.R
@@ -34,11 +35,9 @@ class ProfileAdapter(
         if (cursor.moveToPosition(position)) {
             val userid = cursor.getString(cursor.getColumnIndexOrThrow("userid"))
             val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-            val isMentor = cursor.getInt(cursor.getColumnIndexOrThrow("isMentor")) > 0
+            val isMentor = cursor.getInt(cursor.getColumnIndex("isMentor"))
             val major = cursor.getString(cursor.getColumnIndexOrThrow("major"))
             val intro = cursor.getString(cursor.getColumnIndexOrThrow("intro"))
-        //프로필  DB 에 소개글 추가 가능한지 문의하기.
-
 
             val profile = Profile(userid, name, isMentor, major, intro) // Profile 객체 생성
             holder.bind(profile)
@@ -59,7 +58,7 @@ class ProfileAdapter(
 
         fun bind(profile: Profile) {
             tvName.text = profile.name
-            tvRole.text = if (profile.isMentor) "멘토" else "멘티"
+            tvRole.text = if (profile.isMentor==1) "멘토" else "멘티"
             tvMajor.text = profile.major
         }
     }

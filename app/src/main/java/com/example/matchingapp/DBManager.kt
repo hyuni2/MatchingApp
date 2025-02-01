@@ -5,6 +5,10 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import android.util.Base64
+import java.security.MessageDigest
+import java.security.SecureRandom
 
 class DBManager(
     context: Context?,
@@ -18,7 +22,8 @@ class DBManager(
         db!!.execSQL(
             "CREATE TABLE IF NOT EXISTS UserInfo (" +
                     "id TEXT PRIMARY KEY, " +
-                    "password TEXT)"
+                    "password TEXT NOT NULL, "+
+                    "salt TEXT NOT NULL)"
         )
 
         db.execSQL(
@@ -71,54 +76,87 @@ class DBManager(
         onCreate(db)
     }
 
+    // 비밀번호 해시화 (SHA-256 + Salt)
+    private fun hashPasswordWithSalt(password: String, salt: ByteArray): String {
+        val saltedPassword = password.toByteArray() + salt  // Salt를 ByteArray로 붙이기
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(saltedPassword)
+        return Base64.encodeToString(hashBytes, Base64.NO_WRAP)
+    }
 
+    // Salt 생성 함수
+    private fun generateSalt(): ByteArray {
+        val salt = ByteArray(16) // 16바이트 Salt
+        val secureRandom = SecureRandom()
+        secureRandom.nextBytes(salt)
+        return salt
+    }
 
-    // UserInfo : 회원가입시 아이디와 비밀번호 저장 (중복여부까지)
+    // 비밀번호 검증 (로그인 시 사용)
+    fun verifyPassword(storedHash: String, storedSaltBase64: String, enteredPassword: String): Boolean {
+        val storedSalt = Base64.decode(storedSaltBase64, Base64.NO_WRAP)
+        val enteredHash = hashPasswordWithSalt(enteredPassword, storedSalt)
+        return enteredHash == storedHash
+    }
+
+    // 회원가입 (UserInfo 테이블에 id, password, salt 저장)
     fun registerUser(id: String, password: String): Long {
         val db = this.writableDatabase
 
-        // UserInfo 테이블에 아이디와 비밀번호 삽입
+        // 아이디 중복 체크
         val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ?", arrayOf(id))
-
         if (cursor.count > 0) {
             cursor.close()
-            return -1L // 아이디가 이미 존재하면 -1을 반환
+            return -1L
         }
 
-        // UserInfo 테이블에 데이터 삽입
+        // 새 Salt 생성 & 비밀번호 해시
+        val salt = generateSalt()
+        val hashedPassword = hashPasswordWithSalt(password, salt)
+        val saltBase64 = Base64.encodeToString(salt, Base64.NO_WRAP)
+
+        // UserInfo 테이블에 삽입 (Salt 따로 저장)
         val contentValues = ContentValues().apply {
             put("id", id)
-            put("password", password)
+            put("password", hashedPassword)
+            put("salt", saltBase64)  // Salt 별도 저장!
         }
 
         val result = db.insert("UserInfo", null, contentValues)
 
         // Profile 테이블에도 같은 id 추가
         val profileValues = ContentValues().apply {
-            put("userid", id)  // Profile 테이블의 'userid'에 UserInfo의 id 저장
-            put("name", "")  // 기본값 설정
-            put("isMentor", 0)  // 기본값 설정 (0: 일반 사용자, 1: 멘토)
-            put("major", "")  // 기본값 설정
+            put("userid", id)
+            put("name", "")
+            put("isMentor", 0)
+            put("major", "")
             put("intro", "")
         }
 
         val profileResult = db.insert("Profile", null, profileValues)
 
         cursor.close()
-
         return if (result == -1L || profileResult == -1L) -1L else result
     }
 
-
-
-    // UserInfo : 로그인시 아이디와 비밀번호 일치 여부 확인
+    // 로그인 (DB에서 Salt 불러와서 검증)
     fun loginUser(id: String, password: String): Boolean {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM UserInfo WHERE id = ? AND password = ?", arrayOf(id, password))
-        val isValid = cursor.count > 0
+        val cursor = db.rawQuery("SELECT password, salt FROM UserInfo WHERE id = ?", arrayOf(id))
+
+        if (!cursor.moveToFirst()) {
+            cursor.close()
+            return false
+        }
+
+        val storedHash = cursor.getString(0)
+        val storedSaltBase64 = cursor.getString(1)
+
         cursor.close()
-        return isValid
+
+        return verifyPassword(storedHash, storedSaltBase64, password)
     }
+
 
 
     // Profile : 프로필 조회 (userid로 조회)
@@ -140,30 +178,49 @@ class DBManager(
         return count > 0
     }
 
+
     // Profile : 프로필 수정 (이름 기준)
-    fun updateProfile(id: String, newName: String, newMajor: String, isMentor: Int, newIntro: String): Boolean {
+    fun updateProfile(id: String, newName: String, newisMentor: Int, newMajor: String, newIntro: String): Boolean {
         val db = this.writableDatabase
 
-        // 닉네임 중복 확인
-        val isNameUsed = checkIfNameExists(newName)
+        // 현재 프로필에서 기존 이름을 조회
+        val cursor = db.rawQuery("SELECT name FROM Profile WHERE userid = ?", arrayOf(id))
 
-        if (isNameUsed) {
-            return false // 닉네임이 중복되었으면 업데이트 불가
+        // cursor가 비어 있지 않은지 확인
+        if (cursor.moveToFirst()) {
+            val currentNameIndex = cursor.getColumnIndex("name")
+            if (currentNameIndex != -1) {
+                val currentName = cursor.getString(currentNameIndex)
+                cursor.close()
+
+                // 이름이 변경되었을 때만 닉네임 중복 확인
+                val isNameUsed = newName != currentName && checkIfNameExists(newName)
+
+                if (isNameUsed) {
+                    return false // 닉네임이 중복되었으면 업데이트 불가
+                }
+
+                val values = ContentValues().apply {
+                    put("name", newName)    // 닉네임 업데이트
+                    put("isMentor", newisMentor) // 멘토/멘티 여부 (1: 멘토, 0: 멘티)
+                    put("major", newMajor)  // 전공 업데이트
+                    put("intro", newIntro)  // 소개글 업데이트
+                }
+
+                // id를 기준으로 프로필 수정
+                val rowsAffected = db.update("Profile", values, "userid = ?", arrayOf(id))
+                return rowsAffected > 0
+            } else {
+                cursor.close()
+                Log.e("DBManager", "Column 'name' not found in Profile table")
+                return false
+            }
+        } else {
+            cursor.close()
+            Log.e("DBManager", "No profile found for userid: $id")
+            return false
         }
-
-        val values = ContentValues().apply {
-            put("name", newName)    // 닉네임 업데이트
-            put("major", newMajor)  // 전공 업데이트
-            put("isMentor", isMentor) // 멘토/멘티 여부 (1: 멘토, 0: 멘티)
-            put("intro", newIntro)  // 소개글 업데이트
-        }
-
-        // id를 기준으로 프로필 수정
-        val rowsAffected = db.update("Profile", values, "userid = ?", arrayOf(id))
-        return rowsAffected > 0
     }
-
-
 
 
     // 회원 탈퇴: id 기준으로 삭제 (탈퇴시 프로필 까지 삭제하도록)
@@ -203,24 +260,29 @@ class DBManager(
         if (cursor != null && cursor.moveToFirst()) {
             // 컬럼 인덱스를 안전하게 가져오기
             val nameColumnIndex = cursor.getColumnIndex("name")
+            val isMentorColumnIndex = cursor.getColumnIndex("isMentor")
             val majorColumnIndex = cursor.getColumnIndex("major")
             val introColumnIndex = cursor.getColumnIndex("intro")
-            val isMentorColumnIndex = cursor.getColumnIndex("isMentor")
+
 
             // 컬럼 인덱스가 -1이 아닌지 확인하고 데이터 추출
             if (nameColumnIndex != -1 && majorColumnIndex != -1 && introColumnIndex != -1 && isMentorColumnIndex != -1) {
                 val name = cursor.getString(nameColumnIndex) // 이름
+                val isMentor = cursor.getInt(isMentorColumnIndex) // isMentor가 null이 아닐 경우 처리
                 val major = cursor.getString(majorColumnIndex) ?: "" // major가 null일 경우 빈 문자열 처리
                 val intro = cursor.getString(introColumnIndex) ?: "" // intro가 null일 경우 빈 문자열 처리
-                val isMentor = cursor.getInt(isMentorColumnIndex) // isMentor가 null이 아닐 경우 처리
+
 
                 cursor.close()
                 return Profile(userId, name, isMentor, major, intro) // Profile 객체 반환
+            } else {
+                // 컬럼 인덱스가 잘못되었을 경우 처리 (디버깅을 위한 로그 추가)
+                Log.e("DBManager", "컬럼이 존재하지 않습니다. nameColumnIndex: $nameColumnIndex, majorColumnIndex: $majorColumnIndex, introColumnIndex: $introColumnIndex, isMentorColumnIndex: $isMentorColumnIndex")
             }
         }
 
         cursor.close()
-        return null // 프로필이 없을 경우 null 반환
+        return null
     }
 
 
