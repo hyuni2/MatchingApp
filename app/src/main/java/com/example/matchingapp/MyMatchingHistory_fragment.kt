@@ -36,7 +36,7 @@ class MyMatchingHistory_fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.mymatchinghistory, container, false)
-        dbManager = DBManager(requireContext(), "MatchingDB", null, 1)
+        dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
 
         sendFilterChip = view.findViewById(R.id.sendfilter)
         receiveFilterChip = view.findViewById(R.id.recievefilter)

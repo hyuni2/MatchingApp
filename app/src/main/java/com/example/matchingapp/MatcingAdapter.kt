@@ -83,7 +83,7 @@ class MatchingAdapter(private val context: Context, private val isSentRequests: 
         }
 
         private fun updateRequestStatus(requestId: Int, status: String) {
-            val dbManager = DBManager(context, "MatchingDB", null, 1)
+            val dbManager = DBManager(context, "MatchingAppDB", null, 1)
             dbManager.updateRequestStatus(requestId, status)
             // 상태 업데이트 후 UI 갱신
             setData(requests.map {

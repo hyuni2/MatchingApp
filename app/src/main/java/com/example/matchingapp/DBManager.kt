@@ -1,5 +1,6 @@
 package com.example.matchingapp
 
+
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -285,16 +286,28 @@ class DBManager(
         return null
     }
 
-
-
-
-
     // Profile : 모든 프로필 조회, 멘토멘티 찾기 페이지 프로필 로딩용. (임의추가)
     fun getAllProfiles(): Cursor {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM Profile", null)
     }
 
+    // 이름을 통해 사용자 ID 가져오는 함수
+    fun PDFgetUserIdByName(name: String): String? {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT userid FROM Profile WHERE name = ?", arrayOf(name))
+        var userId: String? = null
+
+        if (cursor.moveToFirst()) {
+            val columnIndex = cursor.getColumnIndex("userid")
+            if (columnIndex != -1) {
+                userId = cursor.getString(columnIndex)
+            }
+        }
+
+        cursor.close()
+        return userId
+    }
 
 
 
@@ -304,14 +317,16 @@ class DBManager(
     //이하 4개 테이블 전부 신청 히스토리 관련 추가 DB
 
     // 신청 데이터 추가
-    fun insertMatchRequest(senderId: String, receiverId: String, status: String): Long {
-        val db = this.writableDatabase
+    fun insertMatchRequest(senderId: String, receiverId: String): Boolean {
+        val db = writableDatabase
         val values = ContentValues().apply {
             put("senderId", senderId)
             put("receiverId", receiverId)
-            put("status", status)
+            put("status", "신청 완료") // 초기 상태
         }
-        return db.insert("MatchRequest", null, values)
+        val result = db.insert("MatchRequest", null, values)
+        db.close()
+        return result != -1L // 성공 여부 반환
     }
 
     // 특정 사용자가 보낸 신청 조회
