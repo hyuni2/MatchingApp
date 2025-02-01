@@ -46,7 +46,7 @@ class ProfileDetailFragment : Fragment() {
         val senderId = getCurrentUserId() // 현재 로그인한 사용자 ID 가져오기
         // name이 null이 아닌 경우에만 PDFgetUserIdByName 함수 호출
         if (name != null) {
-            val receiverId: String? = dbManager.PDFgetUserIdByName(name)
+            val receiverId = getUserIdByName(name)
 
             // receiverId가 null이 아닌 경우
             if (receiverId != null) {
@@ -116,12 +116,18 @@ class ProfileDetailFragment : Fragment() {
 
     // 요청받는 사람의 ID불러오는 함수
     private fun getUserIdByName(name: String): String? {
+        if (name.isNullOrEmpty()) {
+            return null  // name이 null 또는 빈 문자열인 경우 null 반환
+        }
+        val sanitizedName = name.trim()
+
         val db = dbManager.readableDatabase
-        val cursor = db.rawQuery("SELECT userid FROM Profile WHERE name=?", arrayOf(name))
+        val cursor = db.rawQuery("SELECT userid FROM Profile WHERE name=?", arrayOf(sanitizedName))
         var userId: String? = null
         if (cursor.moveToFirst()) {
             userId = cursor.getString(0)
         }
+
         cursor.close()
         return userId
     }
@@ -138,5 +144,7 @@ class ProfileDetailFragment : Fragment() {
         cursor.close()
         return matchExists
     }
+
+
 }
 
