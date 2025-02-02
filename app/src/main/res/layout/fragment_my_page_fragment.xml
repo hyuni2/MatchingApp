@@ -73,6 +73,19 @@
         app:layout_constraintVertical_bias="0.823" />
 
     <TextView
+        android:id="@+id/tvMessageHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:text="쪽지내역"
+        android:textColor="@color/m3_default_color_secondary_text"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.116"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -46,6 +47,8 @@ class MyPage_fragment : Fragment() {
         val imageView: ImageView = view.findViewById(R.id.imageView)
         val textView2: TextView = view.findViewById(R.id.textView2)
         val textView3: TextView = view.findViewById(R.id.textView3)
+        //
+        val tvMessageHistory: TextView = view.findViewById(R.id.tvMessageHistory)
 
         /*네이버 지도
         tvUserLocation = view.findViewById(R.id.tvUserLocation) // 현재 위치 표시 텍스트뷰
@@ -71,6 +74,15 @@ class MyPage_fragment : Fragment() {
             // 프로필수정 액티비티 전환
             val intent = Intent(requireContext(), ProfileEditActivity::class.java)
             startActivity(intent)
+        }
+
+        // "쪽지내역" 클릭시
+        tvMessageHistory.setOnClickListener {
+            Toast.makeText(requireContext(), "쪽지내역 기능 준비 중", Toast.LENGTH_SHORT).show()
+
+            // TODO: 채팅 내역 화면으로 이동 (추후 구현)
+            // val intent = Intent(requireContext(), ChatListActivity::class.java)
+            // startActivity(intent)
         }
 
 
