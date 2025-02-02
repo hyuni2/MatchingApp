@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <solid android:color="#00BFA5"/> <!-- Mint 색상 -->
+        <corners android:radius="12dp"/>
+        <padding android:left="10dp" android:right="10dp" android:top="6dp" android:bottom="6dp"/>
+    </shape>
+</selector>

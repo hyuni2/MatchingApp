@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import android.content.Context
+import android.content.Intent
 
 class ProfileDetailFragment : Fragment() {
     private lateinit var dbManager: DBManager
@@ -38,6 +39,9 @@ class ProfileDetailFragment : Fragment() {
 
         val applyButton = view.findViewById<Button>(R.id.applyButton)
 
+        // 쪽지하기 버튼 찾기
+        val btnMessage = view.findViewById<Button>(R.id.btnMessage)
+
         // 현재 사용자 ID 및 상대방 ID 가져오기
         val senderId = getCurrentUserId()
         val receiverId = name?.let { getUserIdByName(it) }
@@ -47,23 +51,46 @@ class ProfileDetailFragment : Fragment() {
                 senderId == receiverId -> {
                     applyButton.isEnabled = false
                     applyButton.text = "자기 자신에게 요청 불가"
+
+                    // 쪽지하기 버튼 비활성
+                    btnMessage.isEnabled = false
+                    btnMessage.text = "쪽지 불가"
                 }
                 requestSent(senderId, receiverId) -> {
                     applyButton.isEnabled = false
                     applyButton.text = "요청 완료"
+
+                    // 쪽지하기 버튼 활성
+                    btnMessage.isEnabled = true
+                    btnMessage.text = "쪽지하기"
                 }
                 else -> {
                     applyButton.isEnabled = true
                     applyButton.text = "매칭 요청"
+
+                    // 쪽지하기 버튼 활성
+                    btnMessage.isEnabled = true
+                    btnMessage.text = "쪽지하기"
                 }
             }
 
             applyButton.setOnClickListener {
                 sendMatchRequest(receiverId, applyButton)
             }
+            // 쪽지하기 버튼 클릭시
+            btnMessage.setOnClickListener {
+                val intent = Intent(requireContext(), ChatActivity::class.java)
+                intent.putExtra("receiverId", receiverId) // 채팅할 상대 ID
+                intent.putExtra("receiverName", name) // 상대 이름 전달
+                startActivity(intent)
+            }
         } else {
             applyButton.isEnabled = false
             applyButton.text = "요청 불가"
+
+            // 쪽지하기 버튼 비활성
+            btnMessage.isEnabled = false
+            btnMessage.text = "쪽지 불가"
         }
 
         return view

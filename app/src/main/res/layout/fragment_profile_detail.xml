@@ -76,5 +76,15 @@
             android:text="신청하기"
             android:textColor="#FFFFFF" />
 
+        <!-- 쪽지하기 버튼 추가 -->
+        <Button
+            android:id="@+id/btnMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#4CAF50"
+            android:text="쪽지하기"
+            android:textColor="#FFFFFF" />
+
     </LinearLayout>
 </ScrollView>

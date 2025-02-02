@@ -10,6 +10,7 @@ import android.util.Log
 import android.util.Base64
 import java.security.MessageDigest
 import java.security.SecureRandom
+import com.example.matchingapp.ChatMessage
 
 class DBManager(
     context: Context?,
@@ -17,6 +18,13 @@ class DBManager(
     factory: SQLiteDatabase.CursorFactory?,
     version: Int
 ) : SQLiteOpenHelper(context, name, factory, version) {
+
+    companion object {
+        private const val DATABASE_VERSION = 2 // 수정
+        private const val DATABASE_NAME = "MatchingAppDB"
+    }
+
+    constructor(context: Context?) : this(context, DATABASE_NAME, null, DATABASE_VERSION)
 
     // 테이블 생성
     override fun onCreate(db: SQLiteDatabase?) {
@@ -66,15 +74,62 @@ class DBManager(
                     "FOREIGN KEY(senderId) REFERENCES UserInfo(id) ON DELETE CASCADE, " +
                     "FOREIGN KEY(receiverId) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
+
+        // ChatMessage 테이블 생성
+        db!!.execSQL(
+            "CREATE TABLE IF NOT EXISTS ChatMessages (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "senderId TEXT, " +
+                    "receiverId TEXT, " +
+                    "message TEXT, " +
+                    "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        )
+    }
+
+    // 채팅 메시지 추가
+    fun insertChatMessage(senderId: String, receiverId: String, message: String): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("senderId", senderId)
+            put("receiverId", receiverId)
+            put("message", message)
+            put("timestamp", System.currentTimeMillis())
+        }
+        val result = db.insert("ChatMessages", null, values)
+        db.close()
+        return result != -1L
+    }
+    // 채팅 내역
+    fun getChatMessages(senderId: String, receiverId: String): List<ChatMessage> {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT senderId, receiverId, message FROM ChatMessages " +
+                    "WHERE (senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?) ORDER BY timestamp",
+            arrayOf(senderId, receiverId, receiverId, senderId)
+        )
+
+        val chatList = mutableListOf<ChatMessage>()
+        while (cursor.moveToNext()) {
+            val sender = cursor.getString(cursor.getColumnIndexOrThrow("senderId"))
+            val receiver = cursor.getString(cursor.getColumnIndexOrThrow("receiverId"))
+            val message = cursor.getString(cursor.getColumnIndexOrThrow("message"))
+            chatList.add(ChatMessage(sender, receiver, message))
+        }
+        cursor.close()
+        db.close()
+        return chatList
     }
 
     // 데이터베이스 업그레이드 메서드
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db!!.execSQL("DROP TABLE IF EXISTS userinfo")
-        db.execSQL("DROP TABLE IF EXISTS profile")
-        db.execSQL("DROP TABLE IF EXISTS MentorMenteeBoard")
-        db.execSQL("DROP TABLE IF EXISTS MatchRequest")
-        onCreate(db)
+        if (oldVersion < 2) {  // ✅ 기존 DB 버전이 낮다면 새 테이블 추가
+            db!!.execSQL("DROP TABLE IF EXISTS userinfo")
+            db.execSQL("DROP TABLE IF EXISTS profile")
+            db.execSQL("DROP TABLE IF EXISTS MentorMenteeBoard")
+            db.execSQL("DROP TABLE IF EXISTS MatchRequest")
+            db.execSQL("DROP TABLE IF EXISTS ChatMessages")  // ✅ ChatMessages 테이블도 삭제 후 재생성
+            onCreate(db)
+        }  // ✅ 여기 괄호 추가하여 if 문 닫기
     }
 
     // 비밀번호 해시화 (SHA-256 + Salt)
