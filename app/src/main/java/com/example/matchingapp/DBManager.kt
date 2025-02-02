@@ -292,22 +292,29 @@ class DBManager(
         return db.rawQuery("SELECT * FROM Profile", null)
     }
 
-    // 이름을 통해 사용자 ID 가져오는 함수
-    fun PDFgetUserIdByName(name: String): String? {
+    fun getUserIdByName(name: String): String? {
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT userid FROM Profile WHERE name = ?", arrayOf(name))
         var userId: String? = null
+        var cursor: Cursor? = null
 
-        if (cursor.moveToFirst()) {
-            val columnIndex = cursor.getColumnIndex("userid")
-            if (columnIndex != -1) {
-                userId = cursor.getString(columnIndex)
+        try {
+            cursor = db.rawQuery("SELECT userid FROM Profile WHERE name = ?", arrayOf(name))
+            if (cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndex("userid")
+                if (columnIndex != -1) {
+                    userId = cursor.getString(columnIndex)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace() // 예외 발생 시 로그 출력
+        } finally {
+            cursor?.close() // 커서 닫기
+            db.close() // 데이터베이스 닫기
         }
 
-        cursor.close()
         return userId
     }
+
 
 
 
