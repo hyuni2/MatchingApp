@@ -117,7 +117,7 @@ class ProfileDetailFragment : Fragment() {
     private fun requestSent(senderId: String, receiverId: String): Boolean {
         val db = dbManager.readableDatabase
         val cursor = db.rawQuery(
-            "SELECT COUNT(*) FROM MatchRequest WHERE sender = ? AND receiver = ?",
+            "SELECT COUNT(*) FROM MatchRequest WHERE senderId = ? AND receiverId = ?",
             arrayOf(senderId, receiverId)
         )
 
