@@ -76,13 +76,9 @@ class MyPage_fragment : Fragment() {
             startActivity(intent)
         }
 
-        // "쪽지내역" 클릭시
         tvMessageHistory.setOnClickListener {
-            Toast.makeText(requireContext(), "쪽지내역 기능 준비 중", Toast.LENGTH_SHORT).show()
-
-            // TODO: 채팅 내역 화면으로 이동 (추후 구현)
-            // val intent = Intent(requireContext(), ChatListActivity::class.java)
-            // startActivity(intent)
+            val intent = Intent(requireContext(), ChatListActivity::class.java)
+            startActivity(intent)
         }
 
 

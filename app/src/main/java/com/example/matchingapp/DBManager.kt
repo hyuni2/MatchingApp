@@ -119,6 +119,31 @@ class DBManager(
         db.close()
         return chatList
     }
+    // 대화한 상대방 목록 가져오기
+    fun getChatPartners(currentUserId: String): List<String> {
+        val db = readableDatabase
+        val chatPartners = mutableSetOf<String>() // 중복 방지
+
+        val cursor = db.rawQuery(
+            """
+        SELECT DISTINCT senderId, receiverId FROM ChatMessages 
+        WHERE senderId = ? OR receiverId = ?
+        """,
+            arrayOf(currentUserId, currentUserId)
+        )
+
+        while (cursor.moveToNext()) {
+            val senderId = cursor.getString(cursor.getColumnIndexOrThrow("senderId"))
+            val receiverId = cursor.getString(cursor.getColumnIndexOrThrow("receiverId"))
+
+            if (senderId != currentUserId) chatPartners.add(senderId)
+            if (receiverId != currentUserId) chatPartners.add(receiverId)
+        }
+
+        cursor.close()
+        db.close()
+        return chatPartners.toList()
+    }
 
     // 데이터베이스 업그레이드 메서드
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {

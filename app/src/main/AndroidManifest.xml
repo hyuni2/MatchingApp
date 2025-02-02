@@ -38,6 +38,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" /> <!-- 네이버지도 API -->
+        <activity android:name=".ChatListActivity"
+            android:exported="true" />
         <activity android:name=".ChatActivity"
             android:exported="true" />
         <meta-data
