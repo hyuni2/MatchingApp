@@ -3,18 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <!-- 채팅 상단 (대화 상대 이름) -->
-    <TextView
-        android:id="@+id/chatTitle"
+    <!-- 채팅 상단 (대화 상대 이름 + 닫기 버튼) -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="채팅"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:padding="16dp"
-        android:background="#E0E0E0" />
-
+        android:background="#E0E0E0"
+        android:padding="16dp">
+        <TextView
+            android:id="@+id/chatTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="채팅"
+            android:textSize="20sp"
+            android:gravity="center" />
+        <ImageButton
+            android:id="@+id/closeButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="닫기 버튼" />
+    </RelativeLayout>
     <!-- 채팅 메시지 목록 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewChat"
@@ -22,32 +33,28 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="8dp" />
-
     <!-- 메시지 입력 & 전송 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp">
-
         <EditText
             android:id="@+id/editTextMessage"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:hint="메시지 입력"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:background="@android:drawable/editbox_background" />
-
+            android:padding="8dp"
+            android:background="@android:drawable/editbox_background"
+            android:textColor="#000000" />
         <ImageButton
             android:id="@+id/sendButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_send"
             android:background="?android:attr/selectableItemBackground"
-            android:padding="8dp"
-            android:contentDescription="메시지 보내기" />
+            android:contentDescription="메시지 전송 버튼"
+            android:padding="8dp" />
     </LinearLayout>
-
 </LinearLayout>
