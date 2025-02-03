@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import java.io.IOException
 import android.location.Geocoder
+import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
 
 
@@ -83,9 +84,25 @@ class MyPage_fragment : Fragment() {
             startActivity(intent)
         }
 
+        // 📌 위치 설정 결과를 받는 새로운 방식
+        val locationResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val selectedLat = data?.getDoubleExtra("selectedLat", 0.0) ?: 0.0
+                val selectedLng = data?.getDoubleExtra("selectedLng", 0.0) ?: 0.0
+
+                // 📌 변환된 주소를 UI에 표시
+                val address = getAddressFromLatLng(selectedLat, selectedLng)
+                tvUserLocation.text = "현재 위치: $address"
+            }
+        }
+
+// 📌 버튼 클릭 이벤트 수정
         btnSetLocation.setOnClickListener {
             val intent = Intent(requireContext(), MapActivity::class.java)
-            startActivityForResult(intent, LOCATION_REQUEST_CODE)
+            locationResultLauncher.launch(intent) // 새로운 방식으로 액티비티 실행
         }
 
 

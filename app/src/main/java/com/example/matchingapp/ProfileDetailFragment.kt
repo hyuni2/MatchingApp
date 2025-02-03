@@ -10,6 +10,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
+import okio.IOException
+import java.util.Locale
 
 class ProfileDetailFragment : Fragment() {
     private lateinit var dbManager: DBManager
@@ -102,6 +105,41 @@ class ProfileDetailFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // 📌 선택된 프로필의 사용자 ID 가져오기
+        val userId = arguments?.getString("userId")
+
+        if (userId != null) {
+            val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
+            val userLocation = dbManager.getUserLocation(userId)
+
+            if (userLocation != null) {
+                // 📌 UI에 위치 데이터 표시
+                val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
+                val locationTextView: TextView = view.findViewById(R.id.userLocationText) // 🔥 onViewCreated에서는 view 사용
+                locationTextView.text = "현재 위치: $address"
+            }
+        }
+    }
+
+    // 📌 위도, 경도를 주소로 변환하는 함수
+    private fun getAddressFromLatLng(lat: Double, lng: Double): String {
+        val geocoder = Geocoder(requireContext(), Locale.KOREA)
+        return try {
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            if (!addresses.isNullOrEmpty()) {
+                addresses[0].getAddressLine(0) // 전체 주소 반환
+            } else {
+                "주소를 찾을 수 없음"
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            "주소 변환 오류"
+        }
     }
 
     // receiverId를 직접 매개변수로 받도록 수정
