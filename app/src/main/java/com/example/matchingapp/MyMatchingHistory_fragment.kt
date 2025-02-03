@@ -63,6 +63,9 @@ class MyMatchingHistory_fragment : Fragment() {
             dbManager.getReceivedRequests(userId)
         }
 
+
+        //데이터를 불러오기 DB
+
         val requests = mutableListOf<MatchRequest>()
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))

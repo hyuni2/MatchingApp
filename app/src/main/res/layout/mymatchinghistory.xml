@@ -54,17 +54,16 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mysendmatch"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:padding="16dp"
-            android:visibility="visible"
             android:scrollbars="vertical"
-            app:layout_constraintTop_toBottomOf="@id/divider"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
+            app:layout_constraintTop_toBottomOf="@id/divider" />
 
 
     </LinearLayout>
