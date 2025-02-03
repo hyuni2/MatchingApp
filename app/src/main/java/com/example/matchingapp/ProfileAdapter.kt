@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.ImageView
 import androidx.core.database.getIntOrNull
 import androidx.recyclerview.widget.RecyclerView
 import com.example.matchingapp.Profile
@@ -55,12 +56,13 @@ class ProfileAdapter(
         private val tvName: TextView = itemView.findViewById(R.id.tvName)
         private val tvRole: TextView = itemView.findViewById(R.id.tvRole)
         private val tvMajor: TextView = itemView.findViewById(R.id.tvMajor)
+        private val imageView2: ImageView = itemView.findViewById(R.id.imageView2)
 
         fun bind(profile: Profile) {
             tvName.text = profile.name
             tvRole.text = if (profile.isMentor==1) "멘토" else "멘티"
             tvMajor.text = profile.major
+            imageView2.setImageResource(R.drawable.ic_launcher_background)
         }
     }
 }
-

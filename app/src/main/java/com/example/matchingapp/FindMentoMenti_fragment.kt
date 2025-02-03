@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import android.widget.ImageButton
 import com.example.matchingapp.ProfileAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ class FindMentoMenti_fragment : Fragment() {
     private lateinit var searchBar: EditText
     private lateinit var btnSearch: Button
     private lateinit var adapter: ProfileAdapter
+    private lateinit var btnManageProfile: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +34,7 @@ class FindMentoMenti_fragment : Fragment() {
         dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
 
         // "내 소개서 관리" 버튼 클릭 이벤트
-        val btnManageProfile = view.findViewById<Button>(R.id.btnManageProfile)
+        val btnManageProfile = view.findViewById<ImageButton>(R.id.btnManageProfile)
         btnManageProfile.setOnClickListener {
             val intent = Intent(requireContext(), ProfileEditActivity::class.java)
             startActivityForResult(intent, 100)

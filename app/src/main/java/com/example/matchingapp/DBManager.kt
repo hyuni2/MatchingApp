@@ -200,7 +200,7 @@ class DBManager(
         val contentValues = ContentValues().apply {
             put("id", id)
             put("password", hashedPassword)
-            put("salt", saltBase64)  // Salt 별도 저장!
+            put("salt", saltBase64)  // Salt 별도 저장
         }
 
         val result = db.insert("UserInfo", null, contentValues)

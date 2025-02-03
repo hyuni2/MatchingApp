@@ -1,59 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/main"
     android:padding="16dp"
-    android:gravity="center"
-    tools:context=".Login">
+    android:id="@+id/login">
 
-    <TextView
-        android:id="@+id/enter_id"
+    <ImageButton
+        android:id="@+id/backbtlogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/enter_id"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/baclbt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
 
-    <EditText
-        android:id="@+id/id"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:inputType="text"
-        android:hint="@string/id_hint"
-        android:autofillHints="username"
-        android:layout_marginBottom="32dp" />
-    <!--android:contentDescription="@string/id_description"-->
-
-    <TextView
-        android:id="@+id/enter_pw"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/enter_password"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <EditText
-        android:id="@+id/pw"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:backgroundTint="@color/cardview_dark_background"
-        android:inputType="textPassword"
-        android:hint="@string/password_hint"
-        android:autofillHints="password"
-        android:layout_marginBottom="32dp" />
-    <!--android:contentDescription="@string/password_description"-->
+        <TextView
+            android:id="@+id/enter_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/enter_id"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/checkidpw"
-        android:layout_width="170dp"
-        android:layout_height="50dp"
-        android:backgroundTint="#63C7C2"
-        android:text="@string/complete" />
+        <EditText
+            android:id="@+id/id"
+            android:layout_width="200dp"
+            android:layout_height="48dp"
+            android:inputType="text"
+            android:background="@drawable/rectangle5"
+            android:autofillHints="username"
+            android:layout_marginBottom="32dp" />
 
+        <TextView
+            android:id="@+id/enter_pw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_password"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/pw"
+            android:layout_width="200dp"
+            android:layout_height="48dp"
+            android:inputType="textPassword"
+            android:background="@drawable/rectangle5"
+            android:autofillHints="password"
+            android:layout_marginBottom="32dp" />
+
+        <ImageButton
+            android:id="@+id/checkidpw"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:background="@drawable/roginbt" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

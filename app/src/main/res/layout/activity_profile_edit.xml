@@ -6,7 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".ProfileEditActivity">
 
+    <ImageButton
+        android:id="@+id/backbt1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/baclbt"
+        app:layout_constraintBottom_toTopOf="@+id/profileContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"/>
     <!-- 전체 컨테이너 -->
+
     <LinearLayout
         android:id="@+id/profileContainer"
         android:layout_width="0dp"
@@ -33,7 +47,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:contentDescription="Profile Image"
-                android:src="@drawable/ic_launcher_background" />
+                android:src="@drawable/profileframe" />
 
             <!-- 닉네임 및 전공 입력 필드 -->
             <LinearLayout
@@ -56,6 +70,7 @@
                     android:layout_marginTop="8dp"
                     android:hint="전공을 입력하세요" />
             </LinearLayout>
+
         </LinearLayout>
 
         <!-- 멘토/멘티 체크박스 그룹 -->
@@ -106,7 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#616161"
+            android:backgroundTint="#2ADEA3"
             android:text="수정 완료" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@ package com.example.matchingapp
 import com.example.matchingapp.DBManager
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -18,7 +18,8 @@ import org.w3c.dom.Text
 class Login : AppCompatActivity() {
     lateinit var id : EditText
     lateinit var pw : EditText
-    lateinit var checkidpw : Button
+    lateinit var checkidpw : ImageButton
+    lateinit var backbtlogin : ImageButton
     private lateinit var dbManager: DBManager
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -33,7 +34,13 @@ class Login : AppCompatActivity() {
         id = findViewById(R.id.id)
         pw = findViewById(R.id.pw)
         checkidpw = findViewById(R.id.checkidpw)
+        backbtlogin = findViewById(R.id.backbtlogin)
 
+
+        backbtlogin.setOnClickListener {
+            val intent = Intent(this, FirstPageToLoginAndRegister::class.java)
+            startActivity(intent)
+        }
 
         checkidpw.setOnClickListener{
             val userid = id.text.toString().trim()
@@ -59,7 +66,7 @@ class Login : AppCompatActivity() {
 
 
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

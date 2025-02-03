@@ -4,7 +4,7 @@ import com.example.matchingapp.DBManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -22,8 +22,9 @@ import java.util.logging.Handler
 class Register : AppCompatActivity() {
     lateinit var newid : EditText
     lateinit var newpw : EditText
-    lateinit var Register : Button
+    lateinit var Register : ImageButton
     lateinit var dbManager: DBManager
+    lateinit var backbtreg : ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,13 @@ class Register : AppCompatActivity() {
         newid = findViewById(R.id.newid)
         newpw = findViewById(R.id.newpw)
         Register = findViewById(R.id.Register)
+        backbtreg = findViewById(R.id.backbtreg)
+
+
+        backbtreg.setOnClickListener {
+            val intent = Intent(this, FirstPageToLoginAndRegister::class.java)
+            startActivity(intent)
+        }
 
 
         Register.setOnClickListener{
@@ -65,7 +73,6 @@ class Register : AppCompatActivity() {
             }
 
         }
-
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.Register)) { v, insets ->

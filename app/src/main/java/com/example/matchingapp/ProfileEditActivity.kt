@@ -3,6 +3,8 @@ package com.example.matchingapp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.media.Image
+import android.widget.ImageButton
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -18,6 +20,7 @@ class ProfileEditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile_edit)
 
         // UI 요소 연결
+        val backbt1: ImageButton = findViewById(R.id.backbt1)
         val editName: EditText = findViewById(R.id.editName)
         val editMajor: EditText = findViewById(R.id.editMajor)
         val profileintro: EditText = findViewById(R.id.Profileintro)  // 소개글 입력란
@@ -122,6 +125,11 @@ class ProfileEditActivity : AppCompatActivity() {
             if (isChecked) {
                 mentorCheckBox.isChecked = false  // 멘토 체크박스 해제
             }
+        }
+
+        backbt1.setOnClickListener {
+            // 현재 액티비티 종료 (이전 화면으로 돌아감)
+            finish()
         }
     }
 }

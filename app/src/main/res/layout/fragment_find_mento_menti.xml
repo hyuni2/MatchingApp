@@ -20,12 +20,13 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 내 소개서 관리 버튼 -->
-    <Button
+    <ImageButton
         android:id="@+id/btnManageProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="내 소개서 관리"
         android:layout_marginTop="8dp"
+        android:background="@drawable/moveto"
         app:layout_constraintTop_toBottomOf="@id/Title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -2,23 +2,23 @@ package com.example.matchingapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class FirstPageToLoginAndRegister : AppCompatActivity() {
-    lateinit var login : Button
-    lateinit var join : Button
+    lateinit var login : ImageButton
+    lateinit var join : ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.firstpage)
 
-        login = findViewById<Button>(R.id.login)
-        join = findViewById<Button>(R.id.join)
+        login = findViewById<ImageButton>(R.id.login)
+        join = findViewById<ImageButton>(R.id.join)
 
         login.setOnClickListener{
             var intent = Intent(this, Login::class.java)
