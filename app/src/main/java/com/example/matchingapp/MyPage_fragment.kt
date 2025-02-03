@@ -159,7 +159,7 @@ class MyPage_fragment : Fragment() {
             if (imageView != null) {
                 Glide.with(this)
                     .load(imageUri)
-                    .into(imageView)  // Glide를 사용하여 이미지 표시
+                    .into(imageView)
             }
         }
     }
