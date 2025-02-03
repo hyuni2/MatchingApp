@@ -27,7 +27,7 @@ class ProfileDetailFragment : Fragment() {
 
         // 전달받은 데이터 처리
         val name = arguments?.getString("name")
-        val role = arguments?.getString("role")
+        val role = arguments?.getString("role") // 'role'을 그대로 사용
         val major = arguments?.getString("major")
         val intro = arguments?.getString("intro")
 
@@ -74,9 +74,17 @@ class ProfileDetailFragment : Fragment() {
                 }
             }
 
+            // 'role' 값이 isMentor 역할을 한다고 가정
             applyButton.setOnClickListener {
-                sendMatchRequest(receiverId, applyButton)
+                if (receiverId != null) {
+                    val isMentor = if (role == "멘토") 1 else 0
+                    val senderMajor = getUserMajorById(senderId) // 현재 사용자 전공 (String?)
+                    val receiverMajor = major // 전달받은 전공 (String?)
+                    sendMatchRequest(receiverId, isMentor, senderMajor, receiverMajor, applyButton) // 'role'이 "멘토"일 때 1, 아니면 0 전달
+                }
             }
+
+
             // 쪽지하기 버튼 클릭시
             btnMessage.setOnClickListener {
                 val intent = Intent(requireContext(), ChatActivity::class.java)
@@ -97,7 +105,7 @@ class ProfileDetailFragment : Fragment() {
     }
 
     // 🔹 receiverId를 직접 매개변수로 받도록 수정
-    private fun sendMatchRequest(receiverId: String, button: Button) {
+    private fun sendMatchRequest(receiverId: String, isMentor: Int, senderMajor: String?, receiverMajor: String?, button: Button) {
         if (receiverId.isEmpty()) {
             Toast.makeText(requireContext(), "잘못된 프로필 정보입니다.", Toast.LENGTH_SHORT).show()
             return
@@ -110,7 +118,12 @@ class ProfileDetailFragment : Fragment() {
             return
         }
 
-        val success = dbManager.insertMatchRequest(senderId, receiverId)
+        // senderMajor와 receiverMajor가 null일 수 있으므로 null을 처리해줍니다
+        val finalSenderMajor = senderMajor ?: "기본 전공" // 기본값으로 대체
+        val finalReceiverMajor = receiverMajor ?: "기본 전공" // 기본값으로 대체
+
+        // 매칭 요청을 DB에 삽입
+        val success = dbManager.insertMatchRequest(senderId, receiverId, isMentor, finalSenderMajor, finalReceiverMajor)
         if (success) {
             Toast.makeText(requireContext(), "매치 요청이 전달되었습니다.", Toast.LENGTH_SHORT).show()
             button.apply {
@@ -121,6 +134,8 @@ class ProfileDetailFragment : Fragment() {
             Toast.makeText(requireContext(), "매치 요청에 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
     // 현재 로그인한 사용자 ID 가져오는 함수
     private fun getCurrentUserId(): String {
@@ -138,6 +153,18 @@ class ProfileDetailFragment : Fragment() {
         }
         cursor.close()
         return userId
+    }
+
+    // 사용자 ID로 전공 가져오기
+    private fun getUserMajorById(userId: String): String? {
+        val db = dbManager.readableDatabase
+        val cursor = db.rawQuery("SELECT major FROM Profile WHERE userid=?", arrayOf(userId))
+        var major: String? = null
+        if (cursor.moveToFirst()) {
+            major = cursor.getString(0)
+        }
+        cursor.close()
+        return major
     }
 
     // 요청을 보냈는지 확인하는 함수

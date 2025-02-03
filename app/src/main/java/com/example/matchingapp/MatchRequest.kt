@@ -5,5 +5,7 @@ data class MatchRequest(
     val senderId: String,     // 보낸 사용자 ID
     val receiverId: String,   // 받은 사용자 ID
     val status: String,
-    val isMentor: Boolean // 멘토/멘티 정보 추가// 요청 상태
+    val isMentor: Int,
+    val senderMajor: String,
+    val receiverMajor: String
 )

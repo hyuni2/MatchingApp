@@ -71,6 +71,9 @@ class DBManager(
                     "senderId TEXT, " + // 신청을 보낸 사용자 ID
                     "receiverId TEXT, " + // 신청을 받은 사용자 ID
                     "status TEXT, " + // 상태: 신청 완료, 매칭 완료, 매칭 실패, 수락, 거절
+                    "isMentor Integer, " + // 멘토멘티여부
+                    "senderMajor Text, " +
+                    "receiverMajor Text, "+
                     "FOREIGN KEY(senderId) REFERENCES UserInfo(id) ON DELETE CASCADE, " +
                     "FOREIGN KEY(receiverId) REFERENCES UserInfo(id) ON DELETE CASCADE)"
         )
@@ -366,6 +369,27 @@ class DBManager(
         return null
     }
 
+    fun getUserNameById(userId: String): String? {
+        val db = this.readableDatabase
+        // Profile 테이블에서 userid로 프로필을 조회
+        val cursor = db.rawQuery("SELECT name FROM Profile WHERE userId = ?", arrayOf(userId))
+
+        // 컬럼 인덱스를 확인하기 전에 쿼리 결과가 있는지 확인
+        val nameIndex = cursor.getColumnIndex("name")
+
+        // 컬럼 인덱스가 -1이 아니면 데이터 추출
+        return if (cursor.moveToFirst() && nameIndex != -1) {
+            val name = cursor.getString(nameIndex)
+            cursor.close()
+            name
+        } else {
+            cursor.close()
+            null // 컬럼이 없거나 데이터가 없을 경우 null 반환
+        }
+    }
+
+
+
     // Profile : 모든 프로필 조회, 멘토멘티 찾기 페이지 프로필 로딩용. (임의추가)
     fun getAllProfiles(): Cursor {
         val db = this.readableDatabase
@@ -404,12 +428,15 @@ class DBManager(
     //이하 4개 테이블 전부 신청 히스토리 관련 추가 DB
 
     // 신청 데이터 추가
-    fun insertMatchRequest(senderId: String, receiverId: String): Boolean {
+    fun insertMatchRequest(senderId: String, receiverId: String, isMentor: Int, senderMajor: String, receiverMajor: String): Boolean {
         val db = writableDatabase
         val values = ContentValues().apply {
             put("senderId", senderId)
             put("receiverId", receiverId)
             put("status", "신청 완료") // 초기 상태
+            put("isMentor", isMentor)
+            put("senderMajor", senderMajor)
+            put("receiverMajor", receiverMajor)
         }
         val result = db.insert("MatchRequest", null, values)
         db.close()

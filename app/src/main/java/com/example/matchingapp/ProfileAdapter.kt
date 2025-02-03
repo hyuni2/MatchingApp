@@ -34,16 +34,23 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
         if (cursor.moveToPosition(position)) {
-            val userid = cursor.getString(cursor.getColumnIndexOrThrow("userid"))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-            val isMentor = cursor.getInt(cursor.getColumnIndex("isMentor"))
-            val major = cursor.getString(cursor.getColumnIndexOrThrow("major"))
-            val intro = cursor.getString(cursor.getColumnIndexOrThrow("intro"))
+            val userIdIndex = cursor.getColumnIndex("userid")
+            val nameIndex = cursor.getColumnIndex("name")
+            val isMentorIndex = cursor.getColumnIndex("isMentor")
+            val majorIndex = cursor.getColumnIndex("major")
+            val introIndex = cursor.getColumnIndex("intro")
 
-            val profile = Profile(userid, name, isMentor, major, intro) // Profile 객체 생성
+            // 안전하게 데이터 가져오기 (컬럼이 존재하는지 확인 후 값 가져오기)
+            val userid = if (userIdIndex != -1) cursor.getString(userIdIndex) else ""
+            val name = if (nameIndex != -1) cursor.getString(nameIndex) else "이름 없음"
+            val isMentor = if (isMentorIndex != -1) cursor.getInt(isMentorIndex) else 0
+            val major = if (majorIndex != -1) cursor.getString(majorIndex) else "전공 없음"
+            val intro = if (introIndex != -1) cursor.getString(introIndex) else "소개 없음"
+
+            val profile = Profile(userid, name, isMentor, major, intro)
             holder.bind(profile)
             holder.itemView.setOnClickListener {
-                onItemClick(profile) // 클릭 시 리스너 호출
+                onItemClick(profile)
             }
         }
     }
@@ -62,7 +69,7 @@ class ProfileAdapter(
             tvName.text = profile.name
             tvRole.text = if (profile.isMentor==1) "멘토" else "멘티"
             tvMajor.text = profile.major
-            imageView2.setImageResource(R.drawable.ic_launcher_background)
+            imageView2.setImageResource(R.drawable.profileframe)
         }
     }
 }

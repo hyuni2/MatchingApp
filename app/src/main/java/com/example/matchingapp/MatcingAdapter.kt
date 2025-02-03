@@ -5,18 +5,26 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class MatchingAdapter(private val context: Context, private val isSentRequests: Boolean) :
+class MatchingAdapter(private val context: Context, private var isSentRequests: Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var requests: List<MatchRequest> = listOf()
+    private var requests: MutableList<MatchRequest> = mutableListOf()
 
-    fun setData(data: List<MatchRequest>) {
-        this.requests = data
+    // 데이터 설정 메서드
+    fun setData(newRequests: List<MatchRequest>) {
+        requests.clear()
+        requests.addAll(newRequests)
         notifyDataSetChanged()
+    }
+
+    // 필터 변경 시 데이터 갱신 메서드
+    fun setIsSentRequests(isSent: Boolean) {
+        this.isSentRequests = isSent
+        notifyDataSetChanged() // 필터가 변경될 때마다 UI 갱신
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -50,28 +58,43 @@ class MatchingAdapter(private val context: Context, private val isSentRequests: 
         private val statusTextView: TextView = itemView.findViewById(R.id.statusTextView)
 
         fun bind(request: MatchRequest) {
-            nameTextView.text = request.senderId // 예시로 senderId를 이름으로 사용
-            majorTextView.text = request.receiverId // 예시로 receiverId를 전공으로 사용
-            roleTextView.text = if (request.isMentor) "멘토" else "멘티" // 멘토/멘티 표시
+            // receiverId를 사용하여 이름을 가져오는 비동기 작업
+            val userName = getUserNameById(request.receiverId)
+            nameTextView.text = userName ?: "이름을 불러올 수 없습니다"
+            majorTextView.text = request.receiverMajor // 'sent'인 경우 receiverMajor 표시
+            roleTextView.text = when (request.isMentor) {
+                1 -> "멘토"
+                0 -> "멘티"
+                else -> "알 수 없음" // 만약 1이나 0이 아닌 값이 들어오면 "알 수 없음"
+            }
             statusTextView.text = when (request.status) {
                 "completed" -> "매칭 완료"
                 "failed" -> "매칭 실패"
                 else -> "신청 완료"
             }
         }
+
+        private fun getUserNameById(userId: String): String? {
+            val dbManager = DBManager(context, "MatchingAppDB", null, 1)
+            return dbManager.getUserNameById(userId)
+        }
     }
 
     inner class ReceivedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
         private val majorTextView: TextView = itemView.findViewById(R.id.majorTextView)
-        private val introTextView: TextView = itemView.findViewById(R.id.introTextView)
-        private val acceptButton: Button = itemView.findViewById(R.id.acceptButton)
-        private val rejectButton: Button = itemView.findViewById(R.id.rejectButton)
+        private val roleTextView: TextView = itemView.findViewById(R.id.roleTextView)
+        private val acceptButton: ImageButton = itemView.findViewById(R.id.acceptButton)
+        private val rejectButton: ImageButton = itemView.findViewById(R.id.rejectButton)
 
         fun bind(request: MatchRequest) {
-            nameTextView.text = request.senderId // 예시로 senderId를 이름으로 사용
-            majorTextView.text = request.receiverId // 예시로 receiverId를 전공으로 사용
-            introTextView.text = "자기 소개 텍스트" // 예시로 자기 소개 텍스트를 사용
+            nameTextView.text = request.senderId
+            majorTextView.text = request.senderMajor
+            roleTextView.text = when (request.isMentor) {
+                0 -> "멘토"
+                1 -> "멘티"
+                else -> "알 수 없음"
+            }
 
             acceptButton.setOnClickListener {
                 updateRequestStatus(request.id, "completed")

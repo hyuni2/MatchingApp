@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
 
-        // 초기 프래그먼트 설정
+        // 초기 프래그먼트 설정 (FindMentoMenti_fragment)
         replaceFragment(FindMentoMenti_fragment())
 
         // 네비게이션 클릭 리스너
@@ -32,7 +32,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.myhistory -> {
-                    replaceFragment(MyMatchingHistory_fragment())
+                    // 보낸 요청(true)와 받은 요청(false) 프래그먼트를 전환
+                    replaceFragmentWithRequestFilter(true) // 보낸 요청
                     true
                 }
                 else -> false
@@ -45,5 +46,15 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
+    }
+
+    // MyMatchingHistory_fragment를 교체하고 isSentRequests 값을 설정하는 함수
+    private fun replaceFragmentWithRequestFilter(isSentRequests: Boolean) {
+        val fragment = MyMatchingHistory_fragment().apply {
+            arguments = Bundle().apply {
+                putBoolean("isSentRequests", isSentRequests)
+            }
+        }
+        replaceFragment(fragment)
     }
 }
