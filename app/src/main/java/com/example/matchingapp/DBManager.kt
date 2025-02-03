@@ -46,7 +46,7 @@ class DBManager(
         )
 
 
-        // 멘토멘티 구인 테이블 // 프로필 테이블 수정 및 참조로 추후 변경
+        /* 멘토멘티 구인 테이블  프로필 테이블 수정 및 참조로 추후 변경
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS MentorMenteeBoard (" +
                     "userId TEXT, " +  // 작성자 ID
@@ -61,7 +61,7 @@ class DBManager(
                     "FOREIGN KEY(major) REFERENCES Profile(major) ON DELETE CASCADE ON UPDATE CASCADE, " +
                     "FOREIGN KEY(isMentor) REFERENCES Profile(isMentor) ON DELETE CASCADE ON UPDATE CASCADE)"
 
-        )
+        )*/
 
         // MatchRequest 테이블 (새로운 테이블)
         //MyMatchHistory : 보낸신청/받은신청 필터링 기능용 new DB

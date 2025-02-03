@@ -74,7 +74,7 @@ class ProfileDetailFragment : Fragment() {
                 }
             }
 
-            // 'role' 값이 isMentor 역할을 한다고 가정
+
             applyButton.setOnClickListener {
                 if (receiverId != null) {
                     val isMentor = if (role == "멘토") 1 else 0
@@ -104,7 +104,7 @@ class ProfileDetailFragment : Fragment() {
         return view
     }
 
-    // 🔹 receiverId를 직접 매개변수로 받도록 수정
+    // receiverId를 직접 매개변수로 받도록 수정
     private fun sendMatchRequest(receiverId: String, isMentor: Int, senderMajor: String?, receiverMajor: String?, button: Button) {
         if (receiverId.isEmpty()) {
             Toast.makeText(requireContext(), "잘못된 프로필 정보입니다.", Toast.LENGTH_SHORT).show()
@@ -118,7 +118,7 @@ class ProfileDetailFragment : Fragment() {
             return
         }
 
-        // senderMajor와 receiverMajor가 null일 수 있으므로 null을 처리해줍니다
+        // senderMajor, receiverMajor null처리
         val finalSenderMajor = senderMajor ?: "기본 전공" // 기본값으로 대체
         val finalReceiverMajor = receiverMajor ?: "기본 전공" // 기본값으로 대체
 
