@@ -54,16 +54,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // OkHttp(네이버클라우드 API 사용-HTTP 클라이언트)
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
 }
-
-/*// 네이버 지도 api
-dependencies {
-    implementation ("com.naver.maps:map-sdk:3.16.2")  // 네이버 지도 API
-    implementation ("com.squareup.okhttp3:okhttp:4.9.3") // Reverse Geocoding API 호출용
-}*/
-// 네이버 지도 api
-//dependencies {
-    //implementation ("com.naver.maps:map-sdk:3.16.2")  // 네이버 지도 API
-    //implementation ("com.squareup.okhttp3:okhttp:4.9.3") // Reverse Geocoding API 호출용
-//}

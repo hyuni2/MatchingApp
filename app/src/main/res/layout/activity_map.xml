@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <!-- 🌍 처음 화면: 지도 불러오기 버튼과 현재 위치 텍스트만 보임 -->
+    <LinearLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+        <!--<TextView
+            android:id="@+id/locationTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="현재 위치: 미설정"
+            android:textSize="18sp"
+            android:padding="10dp" />-->
+        <Button
+            android:id="@+id/loadMapButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지도 불러오기" />
+    </LinearLayout>
+    <!-- 🗺 팝업 화면: 지도 및 위치 입력 요소들 (초기에는 숨김) -->
+    <LinearLayout
+        android:id="@+id/mapPopupLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#F0F0F0"
+        android:visibility="gone">
+        <!-- ❌ X 버튼 -->
+        <ImageButton
+            android:id="@+id/closeMapButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="@color/black"
+            android:contentDescription="닫기 버튼" />
+        <!-- 🗺 지도 -->
+        <ImageView
+            android:id="@+id/mapImageView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scaleType="fitCenter"
+            android:visibility="visible" />
+        <!-- 🏠 주소 직접 입력 -->
+        <EditText
+            android:id="@+id/addressInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="주소 입력"
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:visibility="visible" />
+        <Button
+            android:id="@+id/confirmAddressButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="주소 입력 완료"
+            android:visibility="visible" />
+        <!-- ✅ 위치 설정 완료 버튼 -->
+        <Button
+            android:id="@+id/confirmLocationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="위치 설정 완료"
+            android:visibility="visible" />
+    </LinearLayout>
+</FrameLayout>
