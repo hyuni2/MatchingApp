@@ -22,7 +22,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-
+import java.io.IOException
+import android.location.Geocoder
+import java.util.Locale
 
 
 class MyPage_fragment : Fragment() {
@@ -50,10 +52,10 @@ class MyPage_fragment : Fragment() {
         //
         val tvMessageHistory: TextView = view.findViewById(R.id.tvMessageHistory)
 
-        /*네이버 지도
+        //네이버 지도
         tvUserLocation = view.findViewById(R.id.tvUserLocation) // 현재 위치 표시 텍스트뷰
         btnSetLocation = view.findViewById(R.id.btnSetLocation) // 위치 설정 버튼
-        */
+
 
         // 현재 로그인한 ID (SharedPreferences)
         val sharedPreferences =
@@ -81,6 +83,11 @@ class MyPage_fragment : Fragment() {
             startActivity(intent)
         }
 
+        btnSetLocation.setOnClickListener {
+            val intent = Intent(requireContext(), MapActivity::class.java)
+            startActivityForResult(intent, LOCATION_REQUEST_CODE)
+        }
+
 
         if (cursor != null && cursor.moveToFirst()) {
             val profileName = cursor.getString(cursor.getColumnIndexOrThrow("name"))
@@ -93,18 +100,6 @@ class MyPage_fragment : Fragment() {
             profileMajorTextView.text = "전공을 입력해주세요"
         }
         cursor?.close()
-
-        /*네이버 지도
-        // 기존에 저장된 위치 불러오기
-        val storedLocation = sharedPreferences.getString("user_location", "현재 위치: 설정되지 않음")
-        tvUserLocation.text = storedLocation
-
-        // "위치 설정" 버튼 클릭 시 네이버 지도 화면 실행
-        btnSetLocation.setOnClickListener {
-            val intent = Intent(requireContext(), NaverMapActivity::class.java)
-            startActivityForResult(intent, LOCATION_REQUEST_CODE)
-        }
-        */
 
         // 이미지 선택 기능 추가
         imageView.setOnClickListener {
@@ -184,14 +179,31 @@ class MyPage_fragment : Fragment() {
             }
         }
 
-        // 네이버 지도에서 선택한 위치 받아오기
-        if (requestCode == LOCATION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val selectedLocation = data?.getStringExtra("selected_location") ?: return
-            tvUserLocation.text = "현재 위치: $selectedLocation"
 
-            // 위치를 SharedPreferences에 저장
-            val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
-            sharedPreferences.edit().putString("user_location", "현재 위치: $selectedLocation").apply()
+        //MapActivity에서 위치 데이터
+        if (requestCode == LOCATION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedLat = data?.getDoubleExtra("selectedLat", 0.0) ?: 0.0
+            val selectedLng = data?.getDoubleExtra("selectedLng", 0.0) ?: 0.0
+
+            //변환된 주소UI
+            getAddressFromLatLng(selectedLat, selectedLng)
+        }
+    }
+
+    // 위도, 경도로 주소 변환
+    private fun getAddressFromLatLng(lat: Double, lng: Double) {
+        val geocoder = Geocoder(requireContext(), Locale.KOREA)
+        try {
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val address = addresses[0].getAddressLine(0)
+                tvUserLocation.text = "현재 위치: $address"
+            } else {
+                tvUserLocation.text = "주소를 찾을 수 없습니다."
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            tvUserLocation.text = "주소 변환 오류"
         }
     }
 

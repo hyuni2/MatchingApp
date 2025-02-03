@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- 네이버지도 위치 권한-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -37,11 +41,13 @@
             android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" /> <!-- 네이버지도 API -->
+            android:exported="true" />
         <activity android:name=".ChatListActivity"
             android:exported="true" />
         <activity android:name=".ChatActivity"
             android:exported="true" />
+        <activity android:name=".MapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <meta-data
             android:name="com.naver.maps.clientId"
             android:value="qv2tml0f23" />
