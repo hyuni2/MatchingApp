@@ -46,13 +46,13 @@ class ChatAdapter(private val currentUserId: String) : RecyclerView.Adapter<Chat
             val params = messageText.layoutParams as ViewGroup.MarginLayoutParams
 
             if (isSentByUser) {
-                // 내 채팅: 오른쪽 정렬 + Mint 배경
+                // 내 채팅: 오른쪽 정렬 + 배경
                 params.marginEnd = 16
                 params.marginStart = 80
                 messageText.setBackgroundResource(R.drawable.bg_chat_sent)
                 messageText.textAlignment = View.TEXT_ALIGNMENT_VIEW_END
             } else {
-                // 상대 채팅: 왼쪽 정렬 + Purple 배경
+                // 상대 채팅: 왼쪽 정렬 + 배경
                 params.marginStart = 16
                 params.marginEnd = 80
                 messageText.setBackgroundResource(R.drawable.bg_chat_received)

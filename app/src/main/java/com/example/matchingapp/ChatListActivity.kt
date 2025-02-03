@@ -1,12 +1,14 @@
 package com.example.matchingapp
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.AbsListView
 
 class ChatListActivity : AppCompatActivity() {
 
@@ -41,6 +43,23 @@ class ChatListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // ListView 아이템의 홀수/짝수 배경색 변경 기능 추가
+        chatListView.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+                for (i in 0 until chatListView.childCount) {
+                    val item = chatListView.getChildAt(i)
+                    if ((firstVisibleItem + i) % 2 == 0) {
+                        item?.setBackgroundColor(Color.parseColor("#ABFFE3"))  // 짝수 번째 (연두색)
+                    } else {
+                        item?.setBackgroundColor(Color.parseColor("#21D08A"))  // 홀수 번째 (민트색)
+                    }
+                }
+            }
+        })
+
+        // 창 닫기 버튼
         val closeButton = findViewById<ImageButton>(R.id.closeChatListButton)
         closeButton.setOnClickListener {
             finish() // 창 닫기
