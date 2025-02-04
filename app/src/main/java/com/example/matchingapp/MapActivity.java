@@ -59,6 +59,7 @@ public class MapActivity extends AppCompatActivity {
         EditText addressInput = findViewById(R.id.addressInput);
         Button confirmAddressButton = findViewById(R.id.confirmAddressButton);
         ImageButton closeMapButton = findViewById(R.id.closeMapButton);
+        ImageButton closeMainButton = findViewById(R.id.closeMainButton);
         mapPopupLayout = findViewById(R.id.mapPopupLayout);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -90,6 +91,13 @@ public class MapActivity extends AppCompatActivity {
             // 📌 로그인 정보 없을 경우 기본 위치 로드
             getCurrentLocation();
         }
+
+        closeMainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         closeMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
