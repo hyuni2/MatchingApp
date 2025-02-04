@@ -24,12 +24,13 @@ class MatchingAdapter(private val context: Context, private var isSentRequests: 
     // 필터 변경 시 데이터 갱신 메서드
     fun setIsSentRequests(isSent: Boolean) {
         this.isSentRequests = isSent
-        notifyDataSetChanged() // 필터가 변경될 때마다 UI 갱신
+        notifyDataSetChanged() // 필터가 변경될 때마다 UI 갱신(보낸 매칭, 받은매칭)
     }
 
     override fun getItemViewType(position: Int): Int {
         return if (isSentRequests) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = if (viewType == VIEW_TYPE_SENT) {

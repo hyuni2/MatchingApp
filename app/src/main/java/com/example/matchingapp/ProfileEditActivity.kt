@@ -3,7 +3,6 @@ package com.example.matchingapp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
-import android.media.Image
 import android.widget.ImageButton
 import android.widget.Button
 import android.widget.EditText

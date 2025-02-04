@@ -121,7 +121,7 @@ class MyPage_fragment : Fragment() {
         }
         cursor?.close()
 
-        // 이미지 선택 기능 추가
+        // 갤러리 권한 요청 후 이미지 선택 가능
         imageView.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -198,17 +198,19 @@ class MyPage_fragment : Fragment() {
         }
     }
 
-
+    // 이미지 Uri저장
     private fun saveImageUri(uri: Uri) {
         val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
         sharedPreferences.edit().putString("profileImageUri", uri.toString()).commit()
     }
 
+    // 갤러리 열기
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE)
     }
 
+    // 이미지 불러오기
     private fun loadImage() {
         val sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Activity.MODE_PRIVATE)
         val imageUriString = sharedPreferences.getString("profileImageUri", null)

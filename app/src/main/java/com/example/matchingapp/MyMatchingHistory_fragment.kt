@@ -50,12 +50,14 @@ class MyMatchingHistory_fragment : Fragment() {
 
         loadMatchRequests(isSentRequests)
 
+        // 보낸현황 필터칩
         sendFilterChip.setOnClickListener {
             isSentRequests = true
             loadMatchRequests(isSentRequests)
             Log.d("MatchingFragment", "isSentRequests = $isSentRequests")
         }
 
+        // 받은현황 필터칩
         receiveFilterChip.setOnClickListener {
             isSentRequests = false
             loadMatchRequests(isSentRequests)
@@ -65,6 +67,7 @@ class MyMatchingHistory_fragment : Fragment() {
         return view
     }
 
+    // 매칭 현황 정보 불러오기
     private fun loadMatchRequests(isSentRequests: Boolean) {
         // 현재 로그인한 ID (SharedPreferences)
         val sharedPreferences =

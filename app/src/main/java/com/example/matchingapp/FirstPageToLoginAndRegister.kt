@@ -20,6 +20,7 @@ class FirstPageToLoginAndRegister : AppCompatActivity() {
         login = findViewById<ImageButton>(R.id.login)
         join = findViewById<ImageButton>(R.id.join)
 
+        // 로그인화면 전환
         login.setOnClickListener{
             var intent = Intent(this, Login::class.java)
             startActivity(intent)
@@ -27,6 +28,7 @@ class FirstPageToLoginAndRegister : AppCompatActivity() {
 
         }
 
+        // 회원가입화면 전환
         join.setOnClickListener{
             var intent = Intent(this, Register::class.java)
             startActivity(intent)

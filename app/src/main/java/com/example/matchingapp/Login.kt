@@ -37,6 +37,7 @@ class Login : AppCompatActivity() {
         backbtlogin = findViewById(R.id.backbtlogin)
 
 
+        // 앱 처음 실행화면으로 이동
         backbtlogin.setOnClickListener {
             val intent = Intent(this, FirstPageToLoginAndRegister::class.java)
             startActivity(intent)

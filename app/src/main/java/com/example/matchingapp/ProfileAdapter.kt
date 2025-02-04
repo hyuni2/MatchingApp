@@ -1,16 +1,13 @@
 package com.example.matchingapp
 
 import android.database.Cursor
-import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ImageView
-import androidx.core.database.getIntOrNull
 import androidx.recyclerview.widget.RecyclerView
-import com.example.matchingapp.Profile
-import com.example.matchingapp.R
+
 
 
 class ProfileAdapter(
@@ -33,6 +30,7 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
+        // 커서를 현재 포지션으로 이동
         if (cursor.moveToPosition(position)) {
             val userIdIndex = cursor.getColumnIndex("userid")
             val nameIndex = cursor.getColumnIndex("name")
@@ -47,8 +45,11 @@ class ProfileAdapter(
             val major = if (majorIndex != -1) cursor.getString(majorIndex) else "전공 없음"
             val intro = if (introIndex != -1) cursor.getString(introIndex) else "소개 없음"
 
+            // Profile 객체 생성 후 ViewHolder에 바인딩
             val profile = Profile(userid, name, isMentor, major, intro)
             holder.bind(profile)
+
+            // 아이템 클릭 시 해당 프로필 정보를 전달하는 클릭 이벤트 설정
             holder.itemView.setOnClickListener {
                 onItemClick(profile)
             }
@@ -59,12 +60,14 @@ class ProfileAdapter(
         return cursor.count
     }
 
+    // 프로필 정보를 표시하는 뷰 홀더 클래스
     class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvName: TextView = itemView.findViewById(R.id.tvName)
         private val tvRole: TextView = itemView.findViewById(R.id.tvRole)
         private val tvMajor: TextView = itemView.findViewById(R.id.tvMajor)
         private val imageView2: ImageView = itemView.findViewById(R.id.imageView2)
 
+        // 프로필 정보를 뷰에 바인딩
         fun bind(profile: Profile) {
             tvName.text = profile.name
             tvRole.text = if (profile.isMentor==1) "멘토" else "멘티"
