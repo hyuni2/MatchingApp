@@ -87,7 +87,7 @@ class MyPage_fragment : Fragment() {
             startActivity(intent)
         }
 
-        // 📌 위치 설정 결과를 받는 새로운 방식
+        // 위치 설정 결과
         val locationResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -96,16 +96,16 @@ class MyPage_fragment : Fragment() {
                 val selectedLat = data?.getDoubleExtra("selectedLat", 0.0) ?: 0.0
                 val selectedLng = data?.getDoubleExtra("selectedLng", 0.0) ?: 0.0
 
-                // 📌 변환된 주소를 UI에 표시
+                // 변환된 주소 UI에 표시
                 val address = getAddressFromLatLng(selectedLat, selectedLng)
                 tvUserLocation.text = "현재 위치: $address"
             }
         }
 
-// 📌 버튼 클릭 이벤트 수정
+        //버튼 클릭이벤트 수정
         btnSetLocation.setOnClickListener {
             val intent = Intent(requireContext(), MapActivity::class.java)
-            locationResultLauncher.launch(intent) // 새로운 방식으로 액티비티 실행
+            locationResultLauncher.launch(intent) //액티비티 실행
         }
 
 
@@ -151,10 +151,10 @@ class MyPage_fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 📌 UI 요소 찾기
+        //UI 요소 찾기
         val locationTextView = view.findViewById<TextView>(R.id.userLocationText)
 
-        // 📌 사용자 위치 불러오기
+        //사용자 위치 불러오기
         val userId = arguments?.getString("userId")
         if (userId != null) {
             val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
@@ -162,7 +162,7 @@ class MyPage_fragment : Fragment() {
 
             if (userLocation != null) {
                 val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
-                Log.d("ProfileDetail", "사용자 위치 업데이트: $address") // ✅ 디버깅 로그 추가
+                Log.d("ProfileDetail", "사용자 위치 업데이트: $address") // 디버깅 로그 추가
                 locationTextView?.text = "현재 위치: $address"
             } else {
                 Log.e("ProfileDetail", "사용자 위치 없음")
@@ -183,7 +183,7 @@ class MyPage_fragment : Fragment() {
 
     private fun loadUserLocation() {
         val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", AppCompatActivity.MODE_PRIVATE)
-        val userId = sharedPreferences.getString("loggedInUser", null) // ✅ 로그인된 사용자 ID 가져오기
+        val userId = sharedPreferences.getString("loggedInUser", null) // 로그인된 사용자 ID 가져오기
 
         if (userId != null) {
             val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
@@ -191,9 +191,9 @@ class MyPage_fragment : Fragment() {
 
             if (userLocation != null) {
                 val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
-                tvUserLocation.text = "현재 위치: $address" // ✅ UI 갱신
+                tvUserLocation.text = "현재 위치: $address" // UI 갱신
             } else {
-                tvUserLocation.text = "현재 위치: 설정되지 않음" // 🔥 위치 정보가 없을 경우 기본값 설정
+                tvUserLocation.text = "현재 위치: 설정되지 않음" // 위치 정보가 없을 경우 기본값 설정
             }
         }
     }
@@ -228,7 +228,7 @@ class MyPage_fragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // ✅ 프로필 이미지 로딩 및 유지
+        //프로필 이미지 로딩 및 유지
         if (requestCode == IMAGE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val imageUri: Uri = data.data!!
             saveImageUri(imageUri)
@@ -239,24 +239,24 @@ class MyPage_fragment : Fragment() {
             }
         }
 
-        // ✅ MapActivity에서 위치 데이터 받아오기
+        // MapActivity에서 위치 데이터 받아오기
         if (requestCode == LOCATION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val selectedLat = data?.getDoubleExtra("selectedLat", 0.0) ?: 0.0
             val selectedLng = data?.getDoubleExtra("selectedLng", 0.0) ?: 0.0
 
-            // ✅ 변환된 주소를 받아 UI에 적용
-            val address = getAddressFromLatLng(selectedLat, selectedLng) // ✅ getAddressFromLatLng() 함수가 반환하도록 수정
-            tvUserLocation.text = "현재 위치: $address" // ✅ 이제 Kotlin.Unit 문제 해결됨!
+            // 변환된 주 UI에 적용
+            val address = getAddressFromLatLng(selectedLat, selectedLng) //getAddressFromLatLng() 함수가 반환하도록 수정
+            tvUserLocation.text = "현재 위치: $address" // 코틀린 문제 해결
         }
     }
 
-    // ✅ 위도, 경도로 주소 변환 (String 반환하도록 수정)
+    // 위도, 경도로 주소 변환 (String 반환하도록 수정)
     private fun getAddressFromLatLng(lat: Double, lng: Double): String {
         val geocoder = Geocoder(requireContext(), Locale.KOREA)
         return try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
             if (!addresses.isNullOrEmpty()) {
-                addresses[0].getAddressLine(0) // ✅ 변환된 주소 반환
+                addresses[0].getAddressLine(0) //변환된 주소 반환
             } else {
                 "주소를 찾을 수 없습니다."
             }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- 🌍 처음 화면: 지도 불러오기 버튼 -->
+    <!-- 처음 화면: 지도 불러오기 버튼 -->
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
@@ -19,15 +19,16 @@
             android:id="@+id/loadMapButton"
             android:layout_width="200dp"
             android:layout_height="60dp"
+            android:layout_marginBottom="100dp"
             android:background="@drawable/rounded_button"
             android:padding="10dp"
             android:text="지도 불러오기"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:layout_marginBottom="15dp"/>
+            android:elevation="15dp"
+            android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- 🗺 팝업 화면: 지도 및 위치 입력 요소들 (초기에는 숨김) -->
+    <!-- 팝업 화면: 지도 및 위치 입력 요소들 (초기에는 숨김) -->
     <LinearLayout
         android:id="@+id/mapPopupLayout"
         android:layout_width="match_parent"
@@ -37,7 +38,7 @@
         android:padding="20dp"
         android:visibility="gone">
 
-        <!-- ❌ X 버튼 (팝업 닫기) -->
+        <!--  X 버튼 (팝업 닫기) -->
         <ImageButton
             android:id="@+id/closeMapButton"
             android:layout_width="48dp"
@@ -48,7 +49,7 @@
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:visibility="visible" />
 
-        <!-- 🗺 지도 -->
+        <!--  지도 -->
         <ImageView
             android:id="@+id/mapImageView"
             android:layout_width="match_parent"
@@ -58,7 +59,7 @@
             android:scaleType="fitCenter"
             android:visibility="visible" /> <!-- ⬆ 지도 위쪽 마진 추가 -->
 
-        <!-- 🏠 주소 직접 입력 -->
+        <!-- 주소 직접 입력 -->
         <EditText
             android:id="@+id/addressInput"
             android:layout_width="match_parent"
@@ -70,7 +71,7 @@
             android:textSize="16sp"
             android:visibility="visible" /> <!-- ⬆ 주소 입력칸 위쪽 마진 추가 -->
 
-        <!-- 🏡 주소 입력 완료 버튼 -->
+        <!-- 주소 입력 완료 버튼 -->
         <Button
             android:id="@+id/confirmAddressButton"
             android:layout_width="match_parent"
@@ -83,7 +84,7 @@
             android:textSize="16sp"
             android:visibility="visible" /> <!-- ⬆ 주소 입력 완료 버튼 위쪽 마진 추가 -->
 
-        <!-- ✅ 위치 설정 완료 버튼 -->
+        <!-- 위치 설정 완료 버튼 -->
         <Button
             android:id="@+id/confirmLocationButton"
             android:layout_width="match_parent"
@@ -97,7 +98,7 @@
             android:visibility="visible" /> <!-- ⬆ 위치 설정 완료 버튼 위쪽 마진 추가 -->
     </LinearLayout>
 
-    <!-- ❌ Close 버튼 (메인 화면 닫기) - 제일 위에 배치하여 항상 보이도록 설정 -->
+    <!--Close 버튼 (메인 화면 닫기) - 제일 위에 배치하여 항상 보이도록 설정 -->
     <ImageButton
         android:id="@+id/closeMainButton"
         android:layout_width="48dp"
