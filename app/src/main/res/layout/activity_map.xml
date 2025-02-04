@@ -19,12 +19,13 @@
             android:id="@+id/loadMapButton"
             android:layout_width="200dp"
             android:layout_height="60dp"
+            android:layout_marginBottom="100dp"
             android:background="@drawable/rounded_button"
             android:padding="10dp"
             android:text="지도 불러오기"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:layout_marginBottom="15dp"/>
+            android:elevation="15dp"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <!-- 🗺 팝업 화면: 지도 및 위치 입력 요소들 (초기에는 숨김) -->

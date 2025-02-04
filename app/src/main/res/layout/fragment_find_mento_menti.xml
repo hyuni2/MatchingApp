@@ -59,7 +59,7 @@
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="104dp"
+        android:layout_marginBottom="80dp"
         android:background="#EEEEEE"
         android:orientation="horizontal"
         android:padding="8dp"
