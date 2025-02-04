@@ -12,6 +12,8 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import com.example.matchingapp.ChatMessage
 
+data class UserLocation(val latitude: Double, val longitude: Double)
+
 class DBManager(
     context: Context?,
     name: String?,
@@ -20,7 +22,7 @@ class DBManager(
 ) : SQLiteOpenHelper(context, name, factory, version) {
 
     companion object {
-        private const val DATABASE_VERSION = 2 // 수정
+        private const val DATABASE_VERSION = 3 // 수정
         private const val DATABASE_NAME = "MatchingAppDB"
     }
 
@@ -87,7 +89,17 @@ class DBManager(
                     "message TEXT, " +
                     "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)"
         )
+
+        // UserLocation 테이블 추가 (위치 저장)
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS UserLocation (" +
+                    "userId TEXT PRIMARY KEY, " +
+                    "latitude REAL, " +
+                    "longitude REAL, " +
+                    "FOREIGN KEY(userId) REFERENCES UserInfo(id) ON DELETE CASCADE)"
+        )
     }
+
 
     // 채팅 메시지 추가
     fun insertChatMessage(senderId: String, receiverId: String, message: String): Boolean {
@@ -155,9 +167,71 @@ class DBManager(
             db.execSQL("DROP TABLE IF EXISTS profile")
             db.execSQL("DROP TABLE IF EXISTS MentorMenteeBoard")
             db.execSQL("DROP TABLE IF EXISTS MatchRequest")
+            db.execSQL("DROP TABLE IF EXISTS UserLocation")
             db.execSQL("DROP TABLE IF EXISTS ChatMessages")  // ✅ ChatMessages 테이블도 삭제 후 재생성
             onCreate(db)
         }  // ✅ 여기 괄호 추가하여 if 문 닫기
+    }
+
+    // 지도-사용자의 위치 DB
+    /*fun saveUserLocation(userId: String, lat: Double, lng: Double) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("userId", userId)
+            put("latitude", lat)
+            put("longitude", lng)
+        }
+
+        db.insertWithOnConflict("UserLocation", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+        db.close()
+    }*/
+
+    fun saveUserLocation(userId: String, latitude: Double, longitude: Double) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("userId", userId)
+            put("latitude", latitude)
+            put("longitude", longitude)
+        }
+
+        // 📌 기존 위치가 있는 경우 업데이트, 없는 경우 삽입
+        val result = db.insertWithOnConflict("UserLocation", null, values, SQLiteDatabase.CONFLICT_REPLACE)
+
+        if (result == -1L) {
+            Log.e("DBManager", "사용자 위치 저장 실패")
+        } else {
+            Log.d("DBManager", "사용자 위치 저장 성공")
+        }
+    }
+
+    fun getUserLocation(userId: String): UserLocation? {
+        val db = readableDatabase
+
+        // ✅ 해당 userId가 UserLocation 테이블에 존재하는지 먼저 확인
+        val checkCursor = db.rawQuery("SELECT COUNT(*) FROM UserLocation WHERE userId = ?", arrayOf(userId))
+        checkCursor.moveToFirst()
+        val count = checkCursor.getInt(0)
+        checkCursor.close()
+
+        if (count == 0) {
+            Log.e("DBManager", "사용자 위치 없음: userId = $userId") // ✅ 위치 데이터가 없는 경우 로그 출력
+            return null
+        }
+
+        // ✅ userId가 존재하면 위치 데이터 조회
+        val cursor = db.rawQuery("SELECT latitude, longitude FROM UserLocation WHERE userId = ?", arrayOf(userId))
+
+        return if (cursor.moveToFirst()) {
+            val latitude = cursor.getDouble(0)
+            val longitude = cursor.getDouble(1)
+            cursor.close()
+            Log.d("DBManager", "사용자 위치 로드 성공: userId = $userId, lat = $latitude, lng = $longitude") // ✅ 위치 로드 성공 로그
+            UserLocation(latitude, longitude)
+        } else {
+            cursor.close()
+            Log.e("DBManager", "사용자 위치 데이터 조회 실패: userId = $userId") // ✅ 쿼리 실행은 됐지만 데이터가 없는 경우
+            null
+        }
     }
 
     // 비밀번호 해시화 (SHA-256 + Salt)

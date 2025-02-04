@@ -29,6 +29,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import kotlin.Pair;
 import okhttp3.*;
 import java.io.IOException;
 import java.util.List;
@@ -59,28 +61,57 @@ public class MapActivity extends AppCompatActivity {
         ImageButton closeMapButton = findViewById(R.id.closeMapButton);
         mapPopupLayout = findViewById(R.id.mapPopupLayout);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-// 📌 위치 요청 설정 (높은 정확도, 빠르게 가져오기)
+
+        //위치 요청 설정 (정확도랑 속도높임)
         locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY) // 높은 정확도 모드
-                .setInterval(5000) // 5초마다 위치 업데이트
-                .setFastestInterval(2000); // 최소 2초 간격
-// 앱 실행 시 지도 숨기기
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY) // 정확도
+                .setInterval(5000) // 5초마다 위치업데이트
+                .setFastestInterval(2000);
+        // 앱 실행하면 지도 숨김
         mapImageView.setVisibility(View.GONE);
-// 📌 이전 저장된 위치 불러오기
-        loadSavedLocation();
-// 📌 처음 앱 실행 시 현재 위치 가져오기
-        if (selectedLat == 0.0 || selectedLng == 0.0) {
-            getCurrentLocation();
+
+        // 📌 현재 로그인한 사용자 ID 가져오기
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("loggedInUser", null);
+
+        if (userId != null) {
+            DBManager dbManager = new DBManager(this, "MatchingAppDB", null, 1);
+            UserLocation userLocation = dbManager.getUserLocation(userId);
+            if (userLocation != null) {
+                selectedLat = userLocation.getLatitude();
+                selectedLng = userLocation.getLongitude();
+
+                loadMap();
+            } else {
+                // 📌 저장된 위치가 없으면 현재 위치 가져오기
+                getCurrentLocation();
+            }
         } else {
-            loadMap(); // 저장된 위치가 있으면 바로 지도 로드
+            // 📌 로그인 정보 없을 경우 기본 위치 로드
+            getCurrentLocation();
         }
+
         closeMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mapPopupLayout.setVisibility(View.GONE);
             }
         });
-// 📌 "주소 확인" 버튼 클릭 시 입력된 주소를 좌표로 변환
+
+        loadMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MAP", "지도 불러오기 버튼 클릭됨"); // ✅ 로그 확인
+                mapImageView.setVisibility(View.VISIBLE);
+                addressInput.setVisibility(View.VISIBLE);
+                confirmAddressButton.setVisibility(View.VISIBLE);
+                mapPopupLayout.setVisibility(View.VISIBLE); // ✅ 팝업 레이아웃 보이기
+                loadMap();
+            }
+        });
+
+
+        // 📌 "주소 확인" 버튼 클릭 시 입력된 주소를 좌표로 변환
         confirmAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,18 +123,8 @@ public class MapActivity extends AppCompatActivity {
                 }
             }
         });
-        // 📌 지도 불러오기 버튼
-        loadMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapImageView.setVisibility(View.VISIBLE);
-                addressInput.setVisibility(View.VISIBLE);
-                confirmAddressButton.setVisibility(View.VISIBLE);
-                mapPopupLayout.setVisibility(View.VISIBLE);
-                loadMap();
-            }
-        });
-// 📌 위치 설정 완료 버튼
+
+        // 📌 위치 설정 완료 버튼
         confirmLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,7 +140,8 @@ public class MapActivity extends AppCompatActivity {
                 finish(); // 팝업 종료
             }
         });
-// 📌 지도 클릭 리스너 (사용자가 원하는 위치 선택)
+
+        // 📌 지도 클릭 리스너 (사용자가 원하는 위치 선택)
         mapImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +151,9 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
     // 📌 주소를 위도, 경도로 변환하는 메서드
     private void convertAddressToCoordinates(String address) {
         new Thread(new Runnable() {
@@ -244,54 +269,65 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-    // 📌 좌표 -> 주소 변환 후 MyPageFragment로 데이터 전달
-    private void getAddressFromLatLng(final double lat, final double lng) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Geocoder geocoder = new Geocoder(MapActivity.this, Locale.KOREA);
-                    List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        final String address = addresses.get(0).getAddressLine(0);
-                        Log.d("MAP", "주소 변환 성공: " + address);
 
-                        // 📌 MyPageFragment로 주소 반환
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("selectedLat", lat);
-                        resultIntent.putExtra("selectedLng", lng);
-                        resultIntent.putExtra("selectedAddress", address);
-                        setResult(RESULT_OK, resultIntent);
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                finish(); // 팝업 종료
-                            }
-                        });
+    // 📌 좌표 -> 주소 변환 후 MyPageFragment로 데이터 전달 + 주소 반환 추가
+    private String getAddressFromLatLng(final double lat, final double lng) {
+        Geocoder geocoder = new Geocoder(MapActivity.this, Locale.KOREA);
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                final String address = addresses.get(0).getAddressLine(0);
+                Log.d("MAP", "주소 변환 성공: " + address);
 
-                    } else {
-                        Log.e("MAP", "주소를 찾을 수 없음");
+                // ✅ MyPageFragment로 변환된 주소 전달
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("selectedLat", lat);
+                resultIntent.putExtra("selectedLng", lng);
+                resultIntent.putExtra("selectedAddress", address);
+                setResult(RESULT_OK, resultIntent);
+
+                // ✅ UI 업데이트 + 팝업 종료 유지
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish(); // 팝업 종료
                     }
-                } catch (IOException e) {
-                    Log.e("MAP", "주소 변환 실패", e);
-                }
+                });
+
+                return address; // ✅ 변환된 주소를 반환하도록 추가
+            } else {
+                return "주소를 찾을 수 없습니다.";
             }
-        }).start();
+        } catch (IOException e) {
+            Log.e("MAP", "주소 변환 실패", e);
+            return "주소 변환 오류";
+        }
     }
+
     // 📌 저장된 위치 불러오기
     private void loadSavedLocation() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         selectedLat = Double.longBitsToDouble(prefs.getLong("saved_lat", Double.doubleToLongBits(0.0)));
         selectedLng = Double.longBitsToDouble(prefs.getLong("saved_lng", Double.doubleToLongBits(0.0)));
     }
-    // 📌 위치 저장하기
+
+    // 📌 위치 저장할 때 DB에도 저장
     private void saveLocation(double lat, double lng) {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong("saved_lat", Double.doubleToLongBits(lat));
         editor.putLong("saved_lng", Double.doubleToLongBits(lng));
         editor.apply();
+
+        // 📌 현재 로그인한 사용자 ID 가져오기
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("loggedInUser", null);
+
+        if (userId != null) {
+            DBManager dbManager = new DBManager(this, "MatchingAppDB", null, 1);
+            dbManager.saveUserLocation(userId, lat, lng);
+        }
     }
     // 📌 실시간 위치 업데이트 콜백
     private final LocationCallback locationCallback = new LocationCallback() {
