@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">MatchingApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="enter_id">1. 아이디를 입력해주세요.</string>
+    <string name="enter_password">2. 비밀번호를 입력해 주세요.</string>
+    <string name="id_hint">아이디</string>
+    <string name="password_hint">비밀번호</string>
+    <string name="id_description">아이디 입력 필드</string>
+    <string name="password_description">비밀번호 입력 필드</string>
+    <string name="complete">로그인하기</string>
+    <string name="register">회원가입</string>
 </resources>
