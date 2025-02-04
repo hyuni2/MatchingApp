@@ -71,7 +71,7 @@ public class MapActivity extends AppCompatActivity {
         // 앱 실행하면 지도 숨김
         mapImageView.setVisibility(View.GONE);
 
-        // 📌 현재 로그인한 사용자 ID 가져오기
+        // 현재 로그인한 사용자 ID
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String userId = sharedPreferences.getString("loggedInUser", null);
 
@@ -84,11 +84,11 @@ public class MapActivity extends AppCompatActivity {
 
                 loadMap();
             } else {
-                // 📌 저장된 위치가 없으면 현재 위치 가져오기
+                // 저장된위치 없으면 현재 위치 가져옴
                 getCurrentLocation();
             }
         } else {
-            // 📌 로그인 정보 없을 경우 기본 위치 로드
+            // 로그인정보 없을 경우 기본위치 로드
             getCurrentLocation();
         }
 
@@ -109,17 +109,17 @@ public class MapActivity extends AppCompatActivity {
         loadMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("MAP", "지도 불러오기 버튼 클릭됨"); // ✅ 로그 확인
+                Log.d("MAP", "지도 불러오기 버튼 클릭됨"); //로그 확인
                 mapImageView.setVisibility(View.VISIBLE);
                 addressInput.setVisibility(View.VISIBLE);
                 confirmAddressButton.setVisibility(View.VISIBLE);
-                mapPopupLayout.setVisibility(View.VISIBLE); // ✅ 팝업 레이아웃 보이기
+                mapPopupLayout.setVisibility(View.VISIBLE); //팝업 레이아웃 보이기
                 loadMap();
             }
         });
 
 
-        // 📌 "주소 확인" 버튼 클릭 시 입력된 주소를 좌표로 변환
+        // "주소 확인" 버튼 클릭- 입력된 주소를 좌표로 변환
         confirmAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,14 +132,14 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        // 📌 위치 설정 완료 버튼
+        //위치 설정 완료 버튼
         confirmLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getAddressFromLatLng(selectedLat, selectedLng);
                 saveLocation(selectedLat, selectedLng);
 
-                // 📌 MyPageFragment로 데이터 전달 (주소 포함)
+                //MyPageFragment로 데이터 전달 (주소 포함)
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("selectedLat", selectedLat);
                 resultIntent.putExtra("selectedLng", selectedLng);
@@ -149,7 +149,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        // 📌 지도 클릭 리스너 (사용자가 원하는 위치 선택)
+        // 지도 클릭(사용자가 원하는 위치 선택)
         mapImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
