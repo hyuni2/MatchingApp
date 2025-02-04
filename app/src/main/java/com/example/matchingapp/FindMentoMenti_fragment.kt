@@ -98,6 +98,7 @@ class FindMentoMenti_fragment : Fragment() {
             putString("name", profile.name)
             putString("isMentor", if (profile.isMentor == 1) "멘토" else "멘티")
             putString("major", profile.major)
+            putString("userId", profile.userid)
             putString("intro", profile.intro)
         }
         detailFragment.arguments = bundle

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.content.Context
 import android.content.Intent
 import android.location.Geocoder
+import android.util.Log
 import okio.IOException
 import java.util.Locale
 
@@ -110,34 +111,75 @@ class ProfileDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 📌 선택된 프로필의 사용자 ID 가져오기
+        // 📌 UI 요소 찾기
+        //val tvUserLocation = view.findViewById<TextView>(R.id.tvUserLocation)
+        // 📌 UI 요소 찾기
+        val locationTextView = view.findViewById<TextView>(R.id.userLocationText)
+
+        // 📌 userId 확인
         val userId = arguments?.getString("userId")
+        if (userId == null) {
+            Log.e("ProfileDetail", "❌ userId 없음! 데이터를 전달하지 못함.")
+            locationTextView?.text = "현재 위치: 정보없음"
+            return
+        } else {
+            Log.d("ProfileDetail", "✅ userId 확인: $userId")
+            loadUserLocation(userId)
+        }
 
-        if (userId != null) {
-            val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
-            val userLocation = dbManager.getUserLocation(userId)
+        // 📌 사용자 위치 불러오기
+        val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
+        val userLocation = dbManager.getUserLocation(userId)
 
-            if (userLocation != null) {
-                // 📌 UI에 위치 데이터 표시
-                val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
-                val locationTextView: TextView = view.findViewById(R.id.userLocationText) // 🔥 onViewCreated에서는 view 사용
-                locationTextView.text = "현재 위치: $address"
+        if (userLocation != null) {
+            val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
+            Log.d("ProfileDetail", "✅ 사용자 위치 업데이트: $address")
+
+            requireActivity().runOnUiThread {
+                locationTextView?.text = "현재 위치: $address"
+            }
+        } else {
+            Log.e("ProfileDetail", "❌ 사용자 위치 없음")
+            requireActivity().runOnUiThread {
+                locationTextView?.text = "현재 위치: 정보없음"
             }
         }
     }
 
-    // 📌 위도, 경도를 주소로 변환하는 함수
+    private fun loadUserLocation(userId: String) {
+        val dbManager = DBManager(requireContext(), "MatchingAppDB", null, 1)
+        val userLocation = dbManager.getUserLocation(userId)
+
+        val locationTextView = view?.findViewById<TextView>(R.id.userLocationText)
+
+        if (userLocation != null) {
+            val address = getAddressFromLatLng(userLocation.latitude, userLocation.longitude)
+            Log.d("ProfileDetail", "✅ 사용자 위치 업데이트: $address")
+
+            requireActivity().runOnUiThread {
+                locationTextView?.text = "현재 위치: $address"
+            }
+        } else {
+            Log.e("ProfileDetail", "❌ 사용자 위치 없음")
+            requireActivity().runOnUiThread {
+                locationTextView?.text = "현재 위치: 정보없음"
+            }
+        }
+    }
+
     private fun getAddressFromLatLng(lat: Double, lng: Double): String {
         val geocoder = Geocoder(requireContext(), Locale.KOREA)
         return try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
             if (!addresses.isNullOrEmpty()) {
-                addresses[0].getAddressLine(0) // 전체 주소 반환
+                val address = addresses[0].getAddressLine(0)
+                Log.d("ProfileDetail", "주소 변환 성공: $address") // ✅ 디버깅 로그 추가
+                address
             } else {
-                "주소를 찾을 수 없음"
+                "주소를 찾을 수 없습니다."
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.e("ProfileDetail", "주소 변환 오류", e)
             "주소 변환 오류"
         }
     }

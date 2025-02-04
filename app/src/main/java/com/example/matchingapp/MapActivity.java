@@ -98,6 +98,19 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
+        loadMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MAP", "지도 불러오기 버튼 클릭됨"); // ✅ 로그 확인
+                mapImageView.setVisibility(View.VISIBLE);
+                addressInput.setVisibility(View.VISIBLE);
+                confirmAddressButton.setVisibility(View.VISIBLE);
+                mapPopupLayout.setVisibility(View.VISIBLE); // ✅ 팝업 레이아웃 보이기
+                loadMap();
+            }
+        });
+
+
         // 📌 "주소 확인" 버튼 클릭 시 입력된 주소를 좌표로 변환
         confirmAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,41 +269,42 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-    // 📌 좌표 -> 주소 변환 후 MyPageFragment로 데이터 전달
-    private void getAddressFromLatLng(final double lat, final double lng) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Geocoder geocoder = new Geocoder(MapActivity.this, Locale.KOREA);
-                    List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        final String address = addresses.get(0).getAddressLine(0);
-                        Log.d("MAP", "주소 변환 성공: " + address);
 
-                        // 📌 MyPageFragment로 주소 반환
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("selectedLat", lat);
-                        resultIntent.putExtra("selectedLng", lng);
-                        resultIntent.putExtra("selectedAddress", address);
-                        setResult(RESULT_OK, resultIntent);
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                finish(); // 팝업 종료
-                            }
-                        });
+    // 📌 좌표 -> 주소 변환 후 MyPageFragment로 데이터 전달 + 주소 반환 추가
+    private String getAddressFromLatLng(final double lat, final double lng) {
+        Geocoder geocoder = new Geocoder(MapActivity.this, Locale.KOREA);
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                final String address = addresses.get(0).getAddressLine(0);
+                Log.d("MAP", "주소 변환 성공: " + address);
 
-                    } else {
-                        Log.e("MAP", "주소를 찾을 수 없음");
+                // ✅ MyPageFragment로 변환된 주소 전달
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("selectedLat", lat);
+                resultIntent.putExtra("selectedLng", lng);
+                resultIntent.putExtra("selectedAddress", address);
+                setResult(RESULT_OK, resultIntent);
+
+                // ✅ UI 업데이트 + 팝업 종료 유지
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish(); // 팝업 종료
                     }
-                } catch (IOException e) {
-                    Log.e("MAP", "주소 변환 실패", e);
-                }
+                });
+
+                return address; // ✅ 변환된 주소를 반환하도록 추가
+            } else {
+                return "주소를 찾을 수 없습니다.";
             }
-        }).start();
+        } catch (IOException e) {
+            Log.e("MAP", "주소 변환 실패", e);
+            return "주소 변환 오류";
+        }
     }
+
     // 📌 저장된 위치 불러오기
     private void loadSavedLocation() {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
